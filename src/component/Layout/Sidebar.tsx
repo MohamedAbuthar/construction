@@ -19,11 +19,13 @@ const Sidebar: React.FC = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const menuItems = [
-    { name: 'Dashboard', icon: LayoutDashboard, href: '/dashboard' },
+    { name: 'Dashboard', icon: LayoutDashboard, href: '/Dashboard' },
     { name: 'Projects', icon: Building2, href: '/projects' },
-    { name: 'Approvals', icon: CheckCircle, href: '/approvals' },
-    { name: 'Finances', icon: DollarSign, href: '/finances' },
-    { name: 'Reports', icon: BarChart3, href: '/reports' },
+    {name: 'Gantt Chart', icon: Building2, href: '/ganttchart' },
+    {name: 'Procurement', icon: Building2, href: '/procurement' },
+    { name: 'Approvals', icon: CheckCircle, href: '/approval' },
+    { name: 'Evm Dashboard', icon: DollarSign, href: '/evmdashboard' },
+    { name: 'Users', icon: BarChart3, href: '/users' },
     { name: 'Settings', icon: Settings, href: '/settings' },
   ];
 
