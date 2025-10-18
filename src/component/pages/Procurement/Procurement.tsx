@@ -1,9 +1,59 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Search, Plus } from 'lucide-react';
-import { ProcurementStats, Product } from '@/component/types';
+import { Search, Plus, Calendar, Building, Package, Truck, CheckCircle, Download, FileText } from 'lucide-react';
+import { Button } from '@/component/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/component/ui/dialog';
 
+interface ProcurementStats {
+  totalProducts: number;
+  totalPurchaseOrders: number;
+  totalPOValue: number;
+  inTransit: number;
+}
+
+interface Product {
+  id: string;
+  name: string;
+  category: string;
+  unit: string;
+  description: string;
+}
+
+interface PurchaseOrder {
+  id: string;
+  project: string;
+  milestone: string;
+  product: string;
+  quantity: number;
+  unit: string;
+  unitPrice: number;
+  total: number;
+  status: 'Received' | 'In Transit' | 'In Production';
+  deliveryDate: string;
+  progress: number;
+  supplier?: string;
+  poNumber?: string;
+  orderDate?: string;
+  estimatedDelivery?: string;
+  shippingAddress?: string;
+  contactPerson?: string;
+  phone?: string;
+  email?: string;
+  deliveryHistory?: {
+    date: string;
+    quantity: number;
+    unit: string;
+    grnReference: string;
+  }[];
+}
 
 const INITIAL_STATS: ProcurementStats = {
   totalProducts: 4,
@@ -43,14 +93,170 @@ const INITIAL_PRODUCTS: Product[] = [
   }
 ];
 
+const INITIAL_PURCHASE_ORDERS: PurchaseOrder[] = [
+  {
+    id: '1',
+    project: 'Metro Station Construction - Phase 2',
+    milestone: 'Structural Framework',
+    product: 'Cement (OPC 53)',
+    quantity: 5000,
+    unit: 'bag',
+    unitPrice: 450,
+    total: 2250000,
+    status: 'Received',
+    deliveryDate: '4/15/2025',
+    progress: 100,
+    supplier: 'ABC Cement Suppliers',
+    poNumber: 'PO-2025-001',
+    orderDate: '3/15/2025',
+    estimatedDelivery: '4/15/2025',
+    shippingAddress: 'Metro Station Site, Downtown Area, City Center',
+    contactPerson: 'John Smith',
+    phone: '+91 9876543210',
+    email: 'john.smith@metrosite.com',
+    deliveryHistory: [
+      {
+        date: '4/15/2025',
+        quantity: 3000,
+        unit: 'bag',
+        grnReference: 'GRN-001'
+      },
+      {
+        date: '4/18/2025',
+        quantity: 2000,
+        unit: 'bag',
+        grnReference: 'GRN-002'
+      }
+    ]
+  },
+  {
+    id: '2',
+    project: 'Metro Station Construction - Phase 2',
+    milestone: 'Structural Framework',
+    product: 'Rebar Steel (TMT 500D)',
+    quantity: 150,
+    unit: 'ton',
+    unitPrice: 55000,
+    total: 8250000,
+    status: 'In Transit',
+    deliveryDate: '4/20/2025',
+    progress: 50,
+    supplier: 'Steel World Ltd.',
+    poNumber: 'PO-2025-002',
+    orderDate: '3/20/2025',
+    estimatedDelivery: '4/20/2025',
+    shippingAddress: 'Metro Station Site, Downtown Area, City Center',
+    contactPerson: 'John Smith',
+    phone: '+91 9876543210',
+    email: 'john.smith@metrosite.com',
+    deliveryHistory: [
+      {
+        date: '4/10/2025',
+        quantity: 75,
+        unit: 'ton',
+        grnReference: 'GRN-003'
+      }
+    ]
+  },
+  {
+    id: '3',
+    project: 'Residential Complex - Tower A',
+    milestone: 'Tower Construction',
+    product: 'Cement (OPC 53)',
+    quantity: 3000,
+    unit: 'bag',
+    unitPrice: 450,
+    total: 1350000,
+    status: 'In Production',
+    deliveryDate: '9/30/2025',
+    progress: 0,
+    supplier: 'XYZ Cement Corp',
+    poNumber: 'PO-2025-003',
+    orderDate: '8/15/2025',
+    estimatedDelivery: '9/30/2025',
+    shippingAddress: 'Residential Complex Site, Suburban Area',
+    contactPerson: 'Sarah Johnson',
+    phone: '+91 9876543211',
+    email: 'sarah.j@residential.com',
+    deliveryHistory: []
+  },
+  {
+    id: '4',
+    project: 'Residential Complex - Tower A',
+    milestone: 'Tower Construction',
+    product: 'Sand',
+    quantity: 200,
+    unit: 'ton',
+    unitPrice: 1200,
+    total: 240000,
+    status: 'In Transit',
+    deliveryDate: '10/10/2025',
+    progress: 50,
+    supplier: 'River Sand Suppliers',
+    poNumber: 'PO-2025-004',
+    orderDate: '9/10/2025',
+    estimatedDelivery: '10/10/2025',
+    shippingAddress: 'Residential Complex Site, Suburban Area',
+    contactPerson: 'Sarah Johnson',
+    phone: '+91 9876543211',
+    email: 'sarah.j@residential.com',
+    deliveryHistory: [
+      {
+        date: '10/5/2025',
+        quantity: 100,
+        unit: 'ton',
+        grnReference: 'GRN-004'
+      }
+    ]
+  }
+];
+
+const UNIT_OPTIONS = ['bag', 'ton', 'm', 'kg', 'ltr', 'piece', 'box'];
+const PROJECT_OPTIONS = [
+  'Metro Station Construction - Phase 2',
+  'Residential Complex - Tower A',
+  'Commercial Plaza Development',
+  'Highway Expansion Project'
+];
+
 export default function Procurement() {
-  const [activeTab, setActiveTab] = useState('products');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [activeTab, setActiveTab] = useState<'products' | 'orders'>('products');
+  const [productSearchTerm, setProductSearchTerm] = useState('');
+  const [orderSearchTerm, setOrderSearchTerm] = useState('');
   const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
+  const [purchaseOrders, setPurchaseOrders] = useState<PurchaseOrder[]>(INITIAL_PURCHASE_ORDERS);
+  const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);
+  const [isPODialogOpen, setIsPODialogOpen] = useState(false);
+  const [isPODetailsDialogOpen, setIsPODetailsDialogOpen] = useState(false);
+  const [selectedPO, setSelectedPO] = useState<PurchaseOrder | null>(null);
+  const [stats, setStats] = useState<ProcurementStats>(INITIAL_STATS);
+
+  const [productFormData, setProductFormData] = useState({
+    name: '',
+    category: '',
+    unit: 'ton',
+    description: ''
+  });
+
+  const [poFormData, setPoFormData] = useState({
+    project: '',
+    product: '',
+    quantity: 0,
+    unit: 'ton',
+    unitPrice: 0,
+    poDate: new Date().toLocaleDateString('en-US'),
+    expectedDelivery: '',
+    status: 'PO Released'
+  });
 
   const filteredProducts = products.filter(product =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.category.toLowerCase().includes(searchTerm.toLowerCase())
+    product.name.toLowerCase().includes(productSearchTerm.toLowerCase()) ||
+    product.category.toLowerCase().includes(productSearchTerm.toLowerCase())
+  );
+
+  const filteredOrders = purchaseOrders.filter(order =>
+    order.project.toLowerCase().includes(orderSearchTerm.toLowerCase()) ||
+    order.product.toLowerCase().includes(orderSearchTerm.toLowerCase())
   );
 
   const formatCurrency = (value: number) => {
@@ -59,6 +265,137 @@ export default function Procurement() {
       currency: 'INR',
       maximumFractionDigits: 0
     }).format(value);
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'Received':
+        return 'bg-green-100 text-green-800 border-green-200';
+      case 'In Transit':
+        return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'In Production':
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'Received':
+        return <CheckCircle className="text-green-600" size={20} />;
+      case 'In Transit':
+        return <Truck className="text-blue-600" size={20} />;
+      case 'In Production':
+        return <Package className="text-yellow-600" size={20} />;
+      default:
+        return <Package className="text-gray-600" size={20} />;
+    }
+  };
+
+  const handleProductInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setProductFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handlePOInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setPoFormData(prev => ({
+      ...prev,
+      [name]: name === 'quantity' || name === 'unitPrice' ? Number(value) : value
+    }));
+  };
+
+  const handleAddProduct = () => {
+    if (!productFormData.name || !productFormData.category || !productFormData.description) {
+      alert('Please fill in all fields');
+      return;
+    }
+
+    const newProduct: Product = {
+      id: String(products.length + 1),
+      name: productFormData.name,
+      category: productFormData.category,
+      unit: productFormData.unit,
+      description: productFormData.description
+    };
+
+    setProducts([...products, newProduct]);
+    setStats(prev => ({
+      ...prev,
+      totalProducts: prev.totalProducts + 1
+    }));
+
+    setProductFormData({
+      name: '',
+      category: '',
+      unit: 'ton',
+      description: ''
+    });
+
+    setIsProductDialogOpen(false);
+  };
+
+  const handleCreatePO = () => {
+    if (!poFormData.project || !poFormData.product || !poFormData.quantity || !poFormData.unitPrice) {
+      alert('Please fill in all required fields');
+      return;
+    }
+
+    const newPO: PurchaseOrder = {
+      id: String(purchaseOrders.length + 1),
+      project: poFormData.project,
+      milestone: 'Structural Framework',
+      product: poFormData.product,
+      quantity: poFormData.quantity,
+      unit: poFormData.unit,
+      unitPrice: poFormData.unitPrice,
+      total: poFormData.quantity * poFormData.unitPrice,
+      status: 'In Production',
+      deliveryDate: poFormData.expectedDelivery,
+      progress: 0,
+      supplier: 'Default Supplier',
+      poNumber: `PO-2025-${String(purchaseOrders.length + 1).padStart(3, '0')}`,
+      orderDate: poFormData.poDate,
+      estimatedDelivery: poFormData.expectedDelivery,
+      shippingAddress: 'Construction Site',
+      contactPerson: 'Site Manager',
+      phone: '+91 0000000000',
+      email: 'manager@construction.com',
+      deliveryHistory: []
+    };
+
+    setPurchaseOrders([...purchaseOrders, newPO]);
+    setStats(prev => ({
+      ...prev,
+      totalPurchaseOrders: prev.totalPurchaseOrders + 1,
+      totalPOValue: prev.totalPOValue + newPO.total
+    }));
+
+    setPoFormData({
+      project: '',
+      product: '',
+      quantity: 0,
+      unit: 'ton',
+      unitPrice: 0,
+      poDate: new Date().toLocaleDateString('en-US'),
+      expectedDelivery: '',
+      status: 'PO Released'
+    });
+
+    setIsPODialogOpen(false);
+  };
+
+  const handlePOClick = (order: PurchaseOrder) => {
+    setSelectedPO(order);
+    setIsPODetailsDialogOpen(true);
   };
 
   return (
@@ -73,119 +410,609 @@ export default function Procurement() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="p-6 bg-white rounded-lg border border-gray-200 shadow-sm">
           <h3 className="text-sm font-medium text-gray-600 mb-2">Products</h3>
-          <p className="text-3xl font-bold text-gray-900">{INITIAL_STATS.totalProducts}</p>
+          <p className="text-3xl font-bold text-gray-900">{stats.totalProducts}</p>
         </div>
         <div className="p-6 bg-white rounded-lg border border-gray-200 shadow-sm">
           <h3 className="text-sm font-medium text-gray-600 mb-2">Purchase Orders</h3>
-          <p className="text-3xl font-bold text-gray-900">{INITIAL_STATS.totalPurchaseOrders}</p>
+          <p className="text-3xl font-bold text-gray-900">{stats.totalPurchaseOrders}</p>
           <p className="text-xs text-gray-500 mt-1">1 received</p>
         </div>
         <div className="p-6 bg-white rounded-lg border border-gray-200 shadow-sm">
           <h3 className="text-sm font-medium text-gray-600 mb-2">Total PO Value</h3>
-          <p className="text-2xl font-bold text-gray-900">{formatCurrency(INITIAL_STATS.totalPOValue)}</p>
+          <p className="text-2xl font-bold text-gray-900">{formatCurrency(stats.totalPOValue)}</p>
         </div>
         <div className="p-6 bg-white rounded-lg border border-gray-200 shadow-sm">
           <h3 className="text-sm font-medium text-gray-600 mb-2">In Transit</h3>
-          <p className="text-3xl font-bold text-gray-900">{INITIAL_STATS.inTransit}</p>
+          <p className="text-3xl font-bold text-gray-900">{stats.inTransit}</p>
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="border-b border-gray-200">
-        <div className="flex gap-8">
-          <button
-            onClick={() => setActiveTab('products')}
-            className={`px-4 py-3 font-medium text-sm border-b-2 transition ${
-              activeTab === 'products'
-                ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-600 hover:text-gray-900'
-            }`}
-          >
-            Products
-          </button>
-          <button
-            onClick={() => setActiveTab('orders')}
-            className={`px-4 py-3 font-medium text-sm border-b-2 transition ${
-              activeTab === 'orders'
-                ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-600 hover:text-gray-900'
-            }`}
-          >
-            Purchase Orders
-          </button>
+      {/* Tabs Container */}
+      <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+        {/* Tab Headers */}
+        <div className="border-b border-gray-200">
+          <nav className="flex gap-8 px-6">
+            <button
+              onClick={() => setActiveTab('products')}
+              className={`px-4 py-3 font-medium text-sm border-b-2 transition-colors ${
+                activeTab === 'products'
+                  ? 'border-gray-500 text-gray-600 bg-blue-50'
+                  : 'border-transparent text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              }`}
+            >
+              Products
+            </button>
+            <button
+              onClick={() => setActiveTab('orders')}
+              className={`px-4 py-3 font-medium text-sm border-b-2 transition-colors ${
+                activeTab === 'orders'
+                  ? 'border-gray-500 text-gray-600 bg-blue-50'
+                  : 'border-transparent text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              }`}
+            >
+              Purchase Orders
+            </button>
+          </nav>
         </div>
-      </div>
 
-      {/* Products Tab Content */}
-      {activeTab === 'products' && (
-        <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-6">
-          <div className="flex justify-between items-center mb-6">
-            <div>
-              <h2 className="text-xl font-bold text-gray-900">Product Catalog</h2>
-              <p className="text-sm text-gray-600">Master list of construction materials</p>
+        {/* Tab Content */}
+        <div className="p-6">
+          {/* Products Tab Content */}
+          {activeTab === 'products' && (
+            <div className="space-y-6">
+              <div className="flex justify-between items-center">
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900">Product Catalog</h2>
+                  <p className="text-sm text-gray-600">Master list of construction materials</p>
+                </div>
+                <Button
+                  onClick={() => setIsProductDialogOpen(true)}
+                  className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
+                >
+                  <Plus size={18} />
+                  Add Product
+                </Button>
+              </div>
+
+              {/* Search for Products */}
+              <div className="relative">
+                <Search className="absolute left-3 top-3 text-gray-400" size={18} />
+                <input
+                  type="text"
+                  placeholder="Search products..."
+                  value={productSearchTerm}
+                  onChange={(e) => setProductSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-0 text-gray-900"
+                />
+              </div>
+
+              {/* Products Table */}
+              <div className="overflow-x-auto border border-gray-200 rounded-lg">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b-2 border-gray-300 bg-gray-50">
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Product Name</th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Category</th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Unit</th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredProducts.map((product) => (
+                      <tr key={product.id} className="border-b border-gray-200 hover:bg-gray-50 transition">
+                        <td className="px-6 py-4 text-sm font-medium text-gray-900">{product.name}</td>
+                        <td className="px-6 py-4 text-sm text-gray-700">{product.category}</td>
+                        <td className="px-6 py-4 text-sm text-gray-700">{product.unit}</td>
+                        <td className="px-6 py-4 text-sm text-gray-600">{product.description}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
-            <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium">
-              <Plus size={18} />
+          )}
+
+          {/* Purchase Orders Tab Content */}
+          {activeTab === 'orders' && (
+            <div className="space-y-6">
+              <div className="flex justify-between items-center">
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900">Purchase Orders</h2>
+                  <p className="text-sm text-gray-600">Track material orders and deliveries</p>
+                </div>
+                <Button 
+                  onClick={() => setIsPODialogOpen(true)}
+                  className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
+                >
+                  <Plus size={18} />
+                  New PO
+                </Button>
+              </div>
+
+              {/* Search for Orders */}
+              <div className="relative">
+                <Search className="absolute left-3 top-3 text-gray-400" size={18} />
+                <input
+                  type="text"
+                  placeholder="Search purchase orders..."
+                  value={orderSearchTerm}
+                  onChange={(e) => setOrderSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-0 text-gray-900"
+                />
+              </div>
+
+              {/* Purchase Orders Table */}
+              <div className="overflow-x-auto border border-gray-200 rounded-lg">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b-2 border-gray-300 bg-gray-50">
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Project</th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Product</th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Quantity</th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Unit Price</th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Total</th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Delivery</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredOrders.map((order) => (
+                      <tr 
+                        key={order.id} 
+                        className="border-b border-gray-200 hover:bg-gray-50 transition cursor-pointer"
+                        onClick={() => handlePOClick(order)}
+                      >
+                        <td className="px-6 py-4">
+                          <div className="text-sm font-semibold text-gray-900">{order.project}</div>
+                          <div className="text-xs text-gray-600">{order.milestone}</div>
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-700">{order.product}</td>
+                        <td className="px-6 py-4 text-sm text-gray-700">
+                          {order.quantity} {order.unit}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-700">{formatCurrency(order.unitPrice)}</td>
+                        <td className="px-6 py-4 text-sm font-semibold text-gray-900">{formatCurrency(order.total)}</td>
+                        <td className="px-6 py-4">
+                          <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold border ${getStatusColor(order.status)}`}>
+                            {order.status}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            <div className="flex-1">
+                              <div className="w-16 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                <div
+                                  className="h-full bg-blue-500 rounded-full"
+                                  style={{ width: `${order.progress}%` }}
+                                />
+                              </div>
+                            </div>
+                            <span className="text-xs text-gray-600 whitespace-nowrap">{order.progress}%</span>
+                          </div>
+                          <div className="text-xs text-gray-600 mt-1">📅 {order.deliveryDate}</div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Add Product Dialog */}
+      <Dialog open={isProductDialogOpen} onOpenChange={setIsProductDialogOpen}>
+        <DialogContent className="bg-white max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-gray-900">Add Product</DialogTitle>
+            <DialogDescription className="text-gray-600">
+              Create a new product in the catalog
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            {/* Product Name */}
+            <div>
+              <label className="block text-sm font-medium text-gray-900 mb-2">
+                Product Name <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                name="name"
+                placeholder="Enter product name"
+                value={productFormData.name}
+                onChange={handleProductInputChange}
+                className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-0 text-gray-900 transition-colors"
+              />
+            </div>
+
+            {/* Category and Unit Row */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-900 mb-2">
+                  Category
+                </label>
+                <input
+                  type="text"
+                  name="category"
+                  placeholder="e.g., Cement, Steel"
+                  value={productFormData.category}
+                  onChange={handleProductInputChange}
+                  className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-0 text-gray-900 transition-colors"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-900 mb-2">
+                  Unit
+                </label>
+                <select
+                  name="unit"
+                  value={productFormData.unit}
+                  onChange={handleProductInputChange}
+                  className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-0 text-gray-900 bg-white transition-colors"
+                >
+                  {UNIT_OPTIONS.map(unit => (
+                    <option key={unit} value={unit}>{unit}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Description */}
+            <div>
+              <label className="block text-sm font-medium text-gray-900 mb-2">
+                Description
+              </label>
+              <textarea
+                name="description"
+                placeholder="Enter product description"
+                value={productFormData.description}
+                onChange={handleProductInputChange}
+                rows={4}
+                className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-0 text-gray-900 resize-none transition-colors"
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsProductDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleAddProduct}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
               Add Product
-            </button>
-          </div>
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
-          {/* Search */}
-          <div className="mb-6 relative">
-            <Search className="absolute left-3 top-3 text-gray-400" size={18} />
-            <input
-              type="text"
-              placeholder="Search products..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+      {/* Create Purchase Order Dialog */}
+      <Dialog open={isPODialogOpen} onOpenChange={setIsPODialogOpen}>
+        <DialogContent className="bg-white max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-gray-900">Create Purchase Order</DialogTitle>
+            <DialogDescription className="text-gray-600">
+              Create a new purchase order for materials
+            </DialogDescription>
+          </DialogHeader>
 
-          {/* Table */}
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b-2 border-gray-300 bg-gray-50">
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Product Name</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Category</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Unit</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Description</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredProducts.map((product) => (
-                  <tr key={product.id} className="border-b border-gray-200 hover:bg-gray-50 transition">
-                    <td className="px-6 py-4 text-sm font-medium text-gray-900">{product.name}</td>
-                    <td className="px-6 py-4 text-sm text-gray-700">{product.category}</td>
-                    <td className="px-6 py-4 text-sm text-gray-700">{product.unit}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600">{product.description}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {/* Purchase Orders Tab Content */}
-      {activeTab === 'orders' && (
-        <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-6">
-          <div className="flex justify-between items-center mb-6">
-            <div>
-              <h2 className="text-xl font-bold text-gray-900">Purchase Orders</h2>
-              <p className="text-sm text-gray-600">Track all purchase orders and deliveries</p>
+          <div className="space-y-6 py-4">
+            {/* Project and Product Row */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-900 mb-2">
+                  Project <span className="text-red-500">*</span>
+                </label>
+                <select
+                  name="project"
+                  value={poFormData.project}
+                  onChange={handlePOInputChange}
+                  className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-0 text-gray-900 bg-white transition-colors"
+                >
+                  <option value="">Select project</option>
+                  {PROJECT_OPTIONS.map(project => (
+                    <option key={project} value={project}>{project}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-900 mb-2">
+                  Product <span className="text-red-500">*</span>
+                </label>
+                <select
+                  name="product"
+                  value={poFormData.product}
+                  onChange={handlePOInputChange}
+                  className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-0 text-gray-900 bg-white transition-colors"
+                >
+                  <option value="">Select product</option>
+                  {products.map(product => (
+                    <option key={product.id} value={product.name}>{product.name}</option>
+                  ))}
+                </select>
+              </div>
             </div>
-            <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium">
-              <Plus size={18} />
+
+            {/* Quantity, UOM, Unit Price Row */}
+            <div>
+              <label className="block text-sm font-medium text-gray-900 mb-2">
+                Quantity & Pricing
+              </label>
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <input
+                    type="number"
+                    name="quantity"
+                    placeholder="0"
+                    value={poFormData.quantity}
+                    onChange={handlePOInputChange}
+                    className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-0 text-gray-900 transition-colors"
+                  />
+                </div>
+                <div>
+                  <select
+                    name="unit"
+                    value={poFormData.unit}
+                    onChange={handlePOInputChange}
+                    className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-0 text-gray-900 bg-white transition-colors"
+                  >
+                    {UNIT_OPTIONS.map(unit => (
+                      <option key={unit} value={unit}>{unit}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="relative">
+                  <input
+                    type="number"
+                    name="unitPrice"
+                    placeholder="0.00"
+                    value={poFormData.unitPrice}
+                    onChange={handlePOInputChange}
+                    step="0.01"
+                    className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-0 text-gray-900 transition-colors"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-4 mt-1 text-xs text-gray-500">
+                <div>Quantity</div>
+                <div>UOM</div>
+                <div>Unit Price</div>
+              </div>
+            </div>
+
+            {/* PO Date and Expected Delivery Row */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-900 mb-2">
+                  PO Date
+                </label>
+                <input
+                  type="text"
+                  name="poDate"
+                  value={poFormData.poDate}
+                  onChange={handlePOInputChange}
+                  className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-0 text-gray-900 transition-colors"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-900 mb-2">
+                  Expected Delivery
+                </label>
+                <input
+                  type="text"
+                  name="expectedDelivery"
+                  placeholder="mm/dd/yyyy"
+                  value={poFormData.expectedDelivery}
+                  onChange={handlePOInputChange}
+                  className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-0 text-gray-900 transition-colors"
+                />
+              </div>
+            </div>
+
+            {/* Status */}
+            <div>
+              <label className="block text-sm font-medium text-gray-900 mb-2">
+                Status
+              </label>
+              <select
+                name="status"
+                value={poFormData.status}
+                onChange={handlePOInputChange}
+                className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-0 text-gray-900 bg-white transition-colors"
+              >
+                <option value="PO Released">PO Released</option>
+                <option value="Draft">Draft</option>
+                <option value="Pending Approval">Pending Approval</option>
+              </select>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsPODialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleCreatePO}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
               Create PO
-            </button>
-          </div>
-          <div className="text-center py-12">
-            <p className="text-gray-500">Purchase orders data coming soon...</p>
-          </div>
-        </div>
-      )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Purchase Order Details Dialog */}
+      <Dialog open={isPODetailsDialogOpen} onOpenChange={setIsPODetailsDialogOpen}>
+        <DialogContent className="bg-white max-w-4xl">
+          <DialogHeader>
+            <DialogTitle className="text-gray-900 flex items-center gap-2">
+              <FileText size={24} />
+              Purchase Order Details
+            </DialogTitle>
+            <DialogDescription className="text-gray-600">
+              View PO information and delivery history
+            </DialogDescription>
+          </DialogHeader>
+
+          {selectedPO && (
+            <div className="space-y-6 py-4">
+              {/* Main Content Grid */}
+              <div className="grid grid-cols-3 gap-6">
+                {/* Left Column - Main Details */}
+                <div className="col-span-2 space-y-6">
+                  {/* Project Section */}
+                  <div>
+                    <h3 className="text-sm font-medium text-gray-700 mb-2">Project</h3>
+                    <p className="text-lg font-semibold text-gray-900">{selectedPO.project}</p>
+                  </div>
+
+                  {/* Product Section */}
+                  <div>
+                    <h3 className="text-sm font-medium text-gray-700 mb-2">Product</h3>
+                    <p className="text-lg font-semibold text-gray-900">{selectedPO.product}</p>
+                  </div>
+
+                  {/* Quantity and Total Value */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-700 mb-2">Quantity</h3>
+                      <p className="text-lg font-semibold text-gray-900">
+                        {selectedPO.quantity} {selectedPO.unit}
+                      </p>
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-700 mb-2">Total Value</h3>
+                      <p className="text-lg font-semibold text-gray-900">
+                        {formatCurrency(selectedPO.total)}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Delivery History */}
+                  <div>
+                    <h3 className="text-sm font-medium text-gray-700 mb-3">Delivery History</h3>
+                    {selectedPO.deliveryHistory && selectedPO.deliveryHistory.length > 0 ? (
+                      <div className="border border-gray-200 rounded-lg overflow-hidden">
+                        <table className="w-full">
+                          <thead className="bg-gray-50">
+                            <tr>
+                              <th className="px-4 py-2 text-left text-sm font-medium text-gray-700 border-b border-gray-200">
+                                Delivery Date
+                              </th>
+                              <th className="px-4 py-2 text-left text-sm font-medium text-gray-700 border-b border-gray-200">
+                                Quantity
+                              </th>
+                              <th className="px-4 py-2 text-left text-sm font-medium text-gray-700 border-b border-gray-200">
+                                GRN Reference
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {selectedPO.deliveryHistory.map((delivery, index) => (
+                              <tr key={index} className="border-b border-gray-200 last:border-b-0">
+                                <td className="px-4 py-3 text-sm text-gray-900">
+                                  {delivery.date}
+                                </td>
+                                <td className="px-4 py-3 text-sm text-gray-900">
+                                  {delivery.quantity} {delivery.unit}
+                                </td>
+                                <td className="px-4 py-3 text-sm text-gray-900 font-mono">
+                                  {delivery.grnReference}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    ) : (
+                      <p className="text-sm text-gray-500 italic">No delivery history available</p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Right Column - Status and Milestone */}
+                <div className="space-y-6">
+                  <div className="border-2 border-gray-200 rounded-lg p-4">
+                    <h3 className="text-sm font-medium text-gray-700 mb-3">Milestone</h3>
+                    <p className="text-md font-semibold text-gray-900">{selectedPO.milestone}</p>
+                  </div>
+
+                  <div className="border-2 border-gray-200 rounded-lg p-4">
+                    <h3 className="text-sm font-medium text-gray-700 mb-3">Status</h3>
+                    <div className="flex items-center gap-2 mb-4">
+                      {getStatusIcon(selectedPO.status)}
+                      <span className={`px-3 py-1 rounded-full text-sm font-semibold border ${getStatusColor(selectedPO.status)}`}>
+                        {selectedPO.status}
+                      </span>
+                    </div>
+                    
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-xs text-gray-500 mb-1">Unit Price</label>
+                        <p className="text-sm font-semibold text-gray-900">
+                          {formatCurrency(selectedPO.unitPrice)}
+                        </p>
+                      </div>
+                      <div>
+                        <label className="block text-xs text-gray-500 mb-1">Expected Delivery</label>
+                        <p className="text-sm font-semibold text-gray-900">
+                          {selectedPO.estimatedDelivery}
+                        </p>
+                      </div>
+                      <div>
+                        <label className="block text-xs text-gray-500 mb-1">PO Number</label>
+                        <p className="text-sm font-semibold text-gray-900">
+                          {selectedPO.poNumber}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Divider */}
+              <div className="border-t border-gray-200 my-4"></div>
+
+              {/* Additional Information */}
+              <div className="grid grid-cols-2 gap-6 text-sm">
+                <div>
+                  <h4 className="font-medium text-gray-700 mb-2">Supplier Information</h4>
+                  <p className="text-gray-900">{selectedPO.supplier}</p>
+                  <p className="text-gray-600">{selectedPO.contactPerson}</p>
+                  <p className="text-gray-600">{selectedPO.phone}</p>
+                  <p className="text-gray-600">{selectedPO.email}</p>
+                </div>
+                <div>
+                  <h4 className="font-medium text-gray-700 mb-2">Shipping Address</h4>
+                  <p className="text-gray-600">{selectedPO.shippingAddress}</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsPODetailsDialogOpen(false)}
+            >
+              Close
+            </Button>
+            <Button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700">
+              <Download size={16} />
+              Download PO
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

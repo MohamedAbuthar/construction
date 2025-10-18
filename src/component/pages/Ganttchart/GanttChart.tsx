@@ -166,11 +166,18 @@ export default function GanttChart() {
     return { left, width };
   };
 
+  const getRowBackground = (id: string): string => {
+    if (id === '1-2-2' || id === '2-1') {
+      return 'bg-blue-50';
+    }
+    return '';
+  };
+
   const renderTasks = (taskList: Task[], level = 0) => {
     return taskList.map(task => (
       <React.Fragment key={task.id}>
-        <tr className="border-b border-gray-200 hover:bg-gray-50">
-          <td className="p-4 sticky left-0 bg-white">
+        <tr className={`border-b border-gray-200 hover:bg-blue-50 ${getRowBackground(task.id)}`}>
+          <td className={`p-4 sticky left-0 ${getRowBackground(task.id) || 'bg-white'}`}>
             <div style={{ paddingLeft: `${level * 20}px` }} className="flex items-center gap-2">
               {task.isParent && (
                 <button
@@ -184,19 +191,23 @@ export default function GanttChart() {
                 </button>
               )}
               {!task.isParent && <div className="w-4" />}
-              <span className="text-sm font-medium text-gray-700">{task.name}</span>
+              <span className={`text-sm font-medium ${
+                level === 0 ? 'text-gray-900 font-semibold' : 'text-gray-700'
+              }`}>
+                {task.name}
+              </span>
             </div>
           </td>
           <td colSpan={MONTHS.length} className="p-0">
-            <div className="relative h-12 bg-gray-50">
+            <div className={`relative h-12 ${getRowBackground(task.id) || 'bg-gray-50'}`}>
               {getMonthIndex(task.startDate) !== -1 && (
                 <div
-                  className={`absolute h-8 top-2 rounded-sm ${
+                  className={`absolute h-8 top-2 rounded-sm shadow-sm ${
                     task.status === 'planned'
                       ? 'bg-blue-400 border border-blue-500'
                       : task.status === 'on-time'
                       ? 'bg-green-400 border border-green-500'
-                      : 'bg-red-400 border border-red-500'
+                      : 'bg-red-500 border border-red-600'
                   }`}
                   style={{
                     left: `${calculateBarPosition(task.startDate, task.endDate).left}%`,
@@ -219,46 +230,48 @@ export default function GanttChart() {
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Gantt Chart</h1>
-        <p className="text-gray-600">Visual timeline of all projects, milestones, and activities</p>
+        <p className="text-gray-600 text-sm">Visual timeline of all projects, milestones, and activities</p>
       </div>
 
       {/* Timeline Section */}
-      <div className="p-6 bg-white rounded-lg shadow-lg">
+      <div className="p-6 bg-white rounded-lg shadow-lg border border-gray-200">
         <div className="mb-6 flex justify-between items-start">
           <div>
-            <h3 className="text-xl font-bold text-gray-900 mb-2">Project Timeline</h3>
-            <p className="text-sm text-gray-600">Click rows to expand/collapse. Blue bars = planned, Green/Red bars = actual</p>
+            <h3 className="text-lg font-bold text-gray-900 mb-1">Project Timeline</h3>
+            <p className="text-xs text-gray-600">Click rows to expand/collapse. Blue bars = planned, Green/Red bars = actual</p>
           </div>
           <div className="flex gap-4 text-xs">
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-blue-400 rounded" />
-              <span className="text-gray-700">Planned</span>
+              <div className="w-2.5 h-2.5 bg-blue-400 rounded-full" />
+              <span className="text-gray-700 font-medium">Planned</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-green-400 rounded" />
-              <span className="text-gray-700">On Time</span>
+              <div className="w-2.5 h-2.5 bg-green-400 rounded-full" />
+              <span className="text-gray-700 font-medium">On Time</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-red-400 rounded" />
-              <span className="text-gray-700">Delayed</span>
+              <div className="w-2.5 h-2.5 bg-red-500 rounded-full" />
+              <span className="text-gray-700 font-medium">Delayed</span>
             </div>
           </div>
         </div>
 
         {/* Table */}
-        <div className="overflow-x-auto border border-gray-200 rounded-lg">
+        <div className="overflow-x-auto border border-gray-300 rounded-lg">
           <table className="w-full">
             <thead>
-              <tr className="bg-gray-100 border-b-2 border-gray-300">
-                <th className="p-4 text-left font-semibold text-gray-700 sticky left-0 bg-gray-100 w-96">
+              <tr className="bg-white border-b-2 border-gray-300">
+                <th className="p-4 text-left font-semibold text-gray-800 sticky left-0 bg-white text-sm w-96">
                   Task
                 </th>
                 {MONTHS.map((month, idx) => (
                   <th
                     key={idx}
-                    className="p-3 text-center font-semibold text-gray-700 text-xs whitespace-nowrap min-w-20"
+                    className="p-2 text-center font-semibold text-gray-700 text-xs whitespace-nowrap min-w-20 border-l border-gray-200"
                   >
-                    {month}
+                    {month.split(' ')[0]}
+                    <br />
+                    {month.split(' ')[1]}
                   </th>
                 ))}
               </tr>
@@ -270,25 +283,25 @@ export default function GanttChart() {
 
       {/* Legend Section */}
       <div className="p-6 bg-white rounded-lg shadow-lg border border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Legend</h3>
+        <h3 className="text-base font-bold text-gray-900 mb-4">Legend</h3>
         <div className="space-y-3">
           <div className="flex items-center gap-3">
             <span className="inline-flex items-center px-3 py-1 rounded-full bg-blue-500 text-white text-xs font-semibold">
               Project
             </span>
-            <span className="text-sm text-gray-600">Top-level projects</span>
+            <span className="text-sm text-gray-700">Top-level projects</span>
           </div>
           <div className="flex items-center gap-3">
-            <span className="inline-flex items-center px-3 py-1 rounded-full bg-gray-200 text-gray-700 text-xs font-semibold">
+            <span className="inline-flex items-center px-3 py-1 rounded-full bg-gray-300 text-gray-900 text-xs font-semibold">
               Milestone
             </span>
-            <span className="text-sm text-gray-600">Major phases within projects</span>
+            <span className="text-sm text-gray-700">Major phases within projects</span>
           </div>
           <div className="flex items-center gap-3">
-            <span className="inline-flex items-center px-3 py-1 rounded-full bg-gray-100 border border-gray-300 text-gray-700 text-xs font-semibold">
+            <span className="inline-flex items-center px-3 py-1 rounded-full bg-gray-200 border border-gray-400 text-gray-800 text-xs font-semibold">
               Activity
             </span>
-            <span className="text-sm text-gray-600">Specific tasks assigned to engineers</span>
+            <span className="text-sm text-gray-700">Specific tasks assigned to engineers</span>
           </div>
         </div>
       </div>

@@ -69,3 +69,14 @@ export interface Approval {
   category: string;
   amount?: number;
 }
+// In your types file, make sure FundRequest includes description
+export interface FundRequest {
+  id: string;
+  week: string;
+  engineer: string;
+  milestone: string;
+  amount: number;
+  status: 'under-review' | 'pending' | 'approved' | 'rejected';
+  requestDate: string;
+  description: string; // Add this line
+}
