@@ -1,10 +1,25 @@
 'use client';
+
 import React, { use, useState } from 'react';
-import { TrendingUp, TrendingDown, DollarSign, ExternalLink, HeartPlus, Plus, Activity } from 'lucide-react';
+import { TrendingUp, TrendingDown, DollarSign, ExternalLink, HeartPlus, ActivityIcon } from 'lucide-react';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts';
+import router, { useRouter } from 'next/navigation';
+
 
 const EVMDashboard = () => {
   const [hoveredBar, setHoveredBar] = useState<'cpi' | 'spi' | null>(null);
   const [mouseY, setMouseY] = useState(0);
+  const router = useRouter();
+
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>, bar: 'cpi' | 'spi') => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -15,6 +30,10 @@ const EVMDashboard = () => {
 
   const handleMouseLeave = () => {
     setHoveredBar(null);
+  };
+
+  const handleProjectClick = (projectId: number) => {
+    router.push(`/projects/view?id=${1}`);
   };
 
   return (
@@ -44,7 +63,7 @@ const EVMDashboard = () => {
           <div className="bg-white rounded-lg border border-gray-200 p-6">
             <div className="flex items-start justify-between mb-3">
               <span className="text-sm text-gray-600">Portfolio SPI</span>
-              <Activity className="w-5 h-5 text-red-500" />
+              <ActivityIcon className="w-5 h-5 text-red-500" />
             </div>
             <div className="text-3xl font-bold text-red-500 mb-2">0.89</div>
             <span className="inline-block px-2 py-1 text-xs font-medium text-red-600 bg-red-50 rounded">
@@ -97,91 +116,72 @@ const EVMDashboard = () => {
             </div>
           </div>
         </div>
+{/* Project Performance Indices */}
+<div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+  <h2 className="text-xl font-bold text-gray-900 mb-1">Project Performance Indices</h2>
+  <p className="text-sm text-gray-500 mb-6">CPI and SPI comparison across projects</p>
 
-        {/* Project Performance Indices */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-1">Project Performance Indices</h2>
-          <p className="text-sm text-gray-500 mb-6">CPI and SPI comparison across projects</p>
-          
-          <div className="relative h-64">
-            {/* Y-axis labels */}
-            <div className="absolute left-0 top-0 bottom-12 w-16 flex flex-col justify-between text-sm text-gray-600">
-              <span className="text-right pr-3">1</span>
-              <span className="text-right pr-3">0.75</span>
-              <span className="text-right pr-3">0.5</span>
-              <span className="text-right pr-3">0.25</span>
-              <span className="text-right pr-3">0</span>
-            </div>
-            
-            {/* Chart area */}
-            <div className="absolute left-25 right-25 top-0 bottom-12">
-              {/* Gray background when hovering */}
-              {hoveredBar && (
-                <div className="absolute inset-0 bg-gray-200 pointer-events-none"></div>
-              )}
-              
-              {/* Grid lines */}
-              <div className="absolute inset-0 flex flex-col justify-between pointer-events-none">
-                <div className="border-t border-gray-300"></div>
-                <div className="border-t border-gray-300"></div>
-                <div className="border-t border-gray-300"></div>
-                <div className="border-t border-gray-300"></div>
-                <div className="border-t border-gray-300"></div>
-              </div>
-              
-              {/* Bars container */}
-              <div className="absolute inset-0 flex items-end">
-                <div className="flex items-end w-full h-full gap-1">
-                  {/* CPI Bar - Green */}
-                  <div 
-                    className="w-1/2 bg-green-600 cursor-pointer relative"
-                    style={{ height: '91%' }}
-                    onMouseMove={(e) => handleMouseMove(e, 'cpi')}
-                    onMouseLeave={handleMouseLeave}
-                  >
-                  </div>
-                  
-                  {/* SPI Bar - Blue */}
-                  <div 
-                    className="w-1/2 bg-blue-600 cursor-pointer relative"
-                    style={{ height: '89%' }}
-                    onMouseMove={(e) => handleMouseMove(e, 'spi')}
-                    onMouseLeave={handleMouseLeave}
-                  >
-                    {/* Tooltip - shows when hovering either bar and follows mouse */}
-                    {hoveredBar && (
-                      <div 
-                        className="absolute left-1/3 transform -translate-x-1/2 -translate-y-1/2 bg-white border border-gray-300 rounded shadow-lg p-4 z-20 whitespace-nowrap pointer-events-none"
-                        style={{ top: `${mouseY}px` }}
-                      >
-                        <div className="text-sm font-semibold text-gray-800 mb-2">Metro Station Constr...</div>
-                        <div className="text-sm text-green-600 mb-1">Cost Performance Index : 0.91</div>
-                        <div className="text-sm text-blue-600">Schedule Performance Index : 0.89</div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            {/* X-axis label */}
-            <div className="absolute bottom-0 left-16 right-0 h-12 flex items-start justify-center pt-2">
-              <span className="text-sm text-gray-600">Metro Station Constr...</span>
-            </div>
-          </div>
-          
-          {/* Legend */}
-          <div className="flex justify-center gap-8 mt-6">
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-green-600 rounded"></div>
-              <span className="text-sm text-gray-700">Cost Performance Index</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-blue-600 rounded"></div>
-              <span className="text-sm text-gray-700">Schedule Performance Index</span>
-            </div>
-          </div>
-        </div>
+  <div className="relative h-90 w-full">
+    <ResponsiveContainer width="100%" height="100%">
+      <BarChart
+        data={[
+          {
+            project: 'Metro Station Construction',
+            CPI: 0.91,
+            SPI: 0.89,
+          },
+        ]}
+        margin={{ top: 10, right: 30, left: 0, bottom: 40 }}
+      >
+        <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" />
+        <XAxis
+          dataKey="project"
+          tick={{ fill: '#4B5563', fontSize: 12 }}
+          interval={0}
+          angle={0}
+          dy={20}
+        />
+        <YAxis
+          domain={[0, 1]}
+          tick={{ fill: '#4B5563', fontSize: 12 }}
+        />
+        <Tooltip
+          contentStyle={{
+            backgroundColor: 'white',
+            border: '1px solid #D1D5DB',
+            borderRadius: '8px',
+          }}
+          formatter={(value: number | string, name: string) => [
+            value,
+            name === 'CPI' ? 'Cost Performance Index' : 'Schedule Performance Index',
+          ]}
+        />
+        <Legend
+          verticalAlign="bottom"
+          height={36}
+          iconType="circle"
+          wrapperStyle={{ paddingTop: '20px' }}
+        />
+<Bar
+  dataKey="CPI"
+  name="Cost Performance Index"
+  fill="#16A34A"
+  barSize={350}
+  radius={[4, 4, 0, 0]}
+/>
+<Bar
+  dataKey="SPI"
+  name="Schedule Performance Index"
+  fill="#2563EB"
+  barSize={350}
+  radius={[4, 4, 0, 0]}
+/>
+
+      </BarChart>
+    </ResponsiveContainer>
+  </div>
+</div>
+
 
         {/* Project Breakdown */}
         <div className="bg-white rounded-lg border border-gray-200 p-6">
@@ -197,7 +197,10 @@ const EVMDashboard = () => {
                 </h3>
                 <p className="text-xs text-gray-500">Last updated: 15/10/2025</p>
               </div>
-              <ExternalLink className="w-5 h-5 text-gray-400 cursor-pointer hover:text-gray-600" />
+<ExternalLink
+  className="w-5 h-5 text-gray-400 cursor-pointer hover:text-gray-600"
+  onClick={() => handleProjectClick(1)}
+/>
             </div>
             
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
