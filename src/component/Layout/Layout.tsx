@@ -1,5 +1,7 @@
 // components/Layout.tsx
-import React from 'react';
+'use client';
+
+import React, { useState } from 'react';
 import Header from './Header';
 import Sidebar from './Sidebar';
 
@@ -8,12 +10,21 @@ interface LayoutProps {
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
   return (
     <div className="flex h-screen bg-gray-50">
-      <Sidebar />
+      <Sidebar isCollapsed={!isSidebarOpen} />
       <div className="flex-1 flex flex-col overflow-hidden">
-        <Header />
-        <main className="flex-1 overflow-auto p-6">
+        <Header 
+          onToggleSidebar={toggleSidebar} 
+          isSidebarOpen={isSidebarOpen} 
+        />
+        <main className="flex-1 overflow-auto">
           {children}
         </main>
       </div>

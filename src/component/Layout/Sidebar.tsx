@@ -1,99 +1,101 @@
 // components/Sidebar.tsx
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { 
   LayoutDashboard, 
-  Building2, 
-  CheckCircle, 
-  DollarSign, 
+  Folder, 
   BarChart3, 
-  Settings,
-  ChevronLeft,
-  ChevronRight,
-  Bell
+  ShoppingCart, 
+  CheckSquare, 
+  TrendingUp, 
+  Users,
+  Settings
 } from 'lucide-react';
 
-const Sidebar: React.FC = () => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+interface SidebarProps {
+  isCollapsed: boolean;
+}
 
+const Sidebar: React.FC<SidebarProps> = ({ isCollapsed }) => {
   const menuItems = [
-    { name: 'Dashboard', icon: LayoutDashboard, href: '/Dashboard' },
-    { name: 'Projects', icon: Building2, href: '/projects' },
-    {name: 'Gantt Chart', icon: Building2, href: '/ganttchart' },
-    {name: 'Procurement', icon: Building2, href: '/procurement' },
-    { name: 'Approvals', icon: CheckCircle, href: '/approval' },
-    { name: 'Evm Dashboard', icon: DollarSign, href: '/evmdashboard' },
-    { name: 'Users', icon: BarChart3, href: '/users' },
-    { name: 'Settings', icon: Settings, href: '/settings' },
+    { name: 'Dashboard', icon: LayoutDashboard, href: '/Dashboard', active: false },
+    { name: 'Projects', icon: Folder, href: '/projects', active: false },
+    { name: 'Gantt Chart', icon: BarChart3, href: '/ganttchart', active: false },
+    { name: 'Procurement', icon: ShoppingCart, href: '/procurement', active: false },
+    { name: 'Approvals', icon: CheckSquare, href: '/approval', active: false },
+    { name: 'EVM Dashboard', icon: TrendingUp, href: '/evmdashboard', active: false },
+    { name: 'Users', icon: Users, href: '/users', active: false },
+    { name: 'Settings', icon: Settings, href: '/settings', active: false },
   ];
 
   return (
-    <div className={`bg-gray-900 text-white transition-all duration-300 ${isCollapsed ? 'w-20' : 'w-64'} flex flex-col`}>
+    <div className={`bg-gray-900 text-white transition-all duration-300 ${isCollapsed ? 'w-16' : 'w-64'} flex flex-col h-screen`}>
       {/* Header */}
       <div className="p-4 flex items-center justify-between border-b border-gray-700">
         {!isCollapsed && (
-          <h2 className="text-xl font-bold text-white">ConstructionPro</h2>
+          <h2 className="text-xl font-bold text-white">Thartius</h2>
         )}
-        <button
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          className="p-2 rounded-lg hover:bg-gray-800 transition-colors"
-          aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-        >
-          {isCollapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
-        </button>
+        {isCollapsed && (
+          <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center mx-auto">
+            <span className="text-white text-sm font-bold">T</span>
+          </div>
+        )}
       </div>
 
+      {/* Navigation Header */}
+      {!isCollapsed && (
+        <div className="px-4 pt-6 pb-2">
+          <h2 className="text-xs font-semibold text-gray-400  tracking-wider">
+            Navigation
+          </h2>
+        </div>
+      )}
+
       {/* Navigation */}
-      <nav className="flex-1 mt-6">
+      <nav className="flex-1">
         {menuItems.map((item) => {
           const IconComponent = item.icon;
+          const isActive = item.active;
+          
           return (
             <Link
               key={item.name}
               href={item.href}
-              className="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-800 hover:text-white transition-colors group"
+              className={`flex items-center px-4 py-3 transition-colors group relative ${
+                isActive 
+                  ? 'bg-blue-600 text-white' 
+                  : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+              } ${isCollapsed ? 'justify-center' : ''}`}
             >
               <IconComponent 
                 size={20} 
                 className="flex-shrink-0"
               />
               {!isCollapsed && (
-                <span className="ml-3 font-medium">{item.name}</span>
+                <span className="ml-3 font-medium text-sm">{item.name}</span>
               )}
               {isCollapsed && (
-                <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 border border-gray-700">
                   {item.name}
                 </div>
+              )}
+              
+              {/* Active indicator dot for collapsed state */}
+              {isCollapsed && isActive && (
+                <div className="absolute -right-1 top-1/2 transform -translate-y-1/2 w-1 h-6 bg-white rounded-l"></div>
               )}
             </Link>
           );
         })}
       </nav>
 
-      {/* Quick Stats */}
-      {!isCollapsed && (
-        <div className="p-4 border-t border-gray-700">
-          <div className="bg-gray-800 rounded-lg p-4">
-            <h3 className="font-semibold text-sm text-gray-400 mb-3 flex items-center">
-              <Bell size={16} className="mr-2" />
-              Quick Stats
-            </h3>
-            <div className="space-y-2">
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-gray-300">Active Projects</span>
-                <span className="font-semibold text-white">2</span>
-              </div>
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-gray-300">Pending Approvals</span>
-                <span className="font-semibold text-yellow-400">1</span>
-              </div>
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-gray-300">Total Value</span>
-                <span className="font-semibold text-green-400">$8.5B</span>
-              </div>
-            </div>
+      {/* User Profile Section - Admin icon removed, only showing in collapsed state if needed */}
+      {isCollapsed && (
+        <div className="p-4 border-t border-gray-700 flex justify-center">
+          <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+            <span className="text-white text-sm font-medium">T</span>
           </div>
         </div>
       )}
