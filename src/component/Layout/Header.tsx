@@ -6,10 +6,19 @@ import { ChevronDown, Shield, Menu, X } from 'lucide-react';
 
 interface HeaderProps {
   onToggleSidebar: () => void;
+  onToggleMobileSidebar: () => void;
   isSidebarOpen: boolean;
+  userRole: string;
+  onRoleChange: (role: string) => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ onToggleSidebar, isSidebarOpen }) => {
+const Header: React.FC<HeaderProps> = ({ 
+  onToggleSidebar, 
+  onToggleMobileSidebar, 
+  isSidebarOpen, 
+  userRole, 
+  onRoleChange 
+}) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -19,7 +28,9 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar, isSidebarOpen }) => {
     { id: 3, name: 'Site Engineer', value: 'site_engineer' }
   ];
 
-  const [selectedRole, setSelectedRole] = useState(userRoles[0]);
+  const [selectedRole, setSelectedRole] = useState(
+    userRoles.find(role => role.value === userRole.toLowerCase().replace(' ', '_')) || userRoles[0]
+  );
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -37,23 +48,35 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar, isSidebarOpen }) => {
   const handleRoleSelect = (role: typeof userRoles[0]) => {
     setSelectedRole(role);
     setIsDropdownOpen(false);
-    console.log('Selected role:', role.name);
+    onRoleChange(role.name); // This updates the role in Layout
   };
 
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200">
-      <div className="flex items-center justify-between px-6 py-4">
-        {/* Sidebar Toggle Button */}
-        <button
-          onClick={onToggleSidebar}
-          className="p-2 text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-100 transition-colors"
-          aria-label={isSidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
-        >
-          {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
-        </button>
+    <header className="bg-white shadow-sm border-b border-gray-200 w-full h-16">
+      <div className="flex items-center justify-between px-4 md:px-6 py-4">
+        {/* Left Section - Sidebar Toggle Buttons */}
+        <div className="flex items-center space-x-2">
+          {/* Mobile menu button */}
+          <button
+            onClick={onToggleMobileSidebar}
+            className="p-2 text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-100 transition-colors md:hidden"
+            aria-label="Open menu"
+          >
+            <Menu size={20} />
+          </button>
+          
+          {/* Desktop sidebar toggle button */}
+          <button
+            onClick={onToggleSidebar}
+            className="p-2 text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-100 transition-colors hidden md:block"
+            aria-label={isSidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
+          >
+            {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
+        </div>
         
+        {/* Right Section - User Profile Dropdown */}
         <div className="flex items-center space-x-4">
-          {/* User Profile Dropdown */}
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -62,8 +85,15 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar, isSidebarOpen }) => {
               <div className="w-8 h-8 bg-white border border-gray-300 rounded-full flex items-center justify-center">
                 <Shield size={16} className="text-gray-600" />
               </div>
-              <div className="flex items-center space-x-1">
+              <div className="hidden sm:flex items-center space-x-1">
                 <span className="text-gray-700 font-medium">{selectedRole.name}</span>
+                <ChevronDown 
+                  size={16} 
+                  className={`text-gray-500 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} 
+                />
+              </div>
+              {/* Mobile: Show only chevron without role name */}
+              <div className="sm:hidden">
                 <ChevronDown 
                   size={16} 
                   className={`text-gray-500 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} 
@@ -74,6 +104,9 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar, isSidebarOpen }) => {
             {/* Dropdown Menu */}
             {isDropdownOpen && (
               <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                <div className="px-4 py-2 text-xs font-semibold text-gray-500 border-b border-gray-100 mb-1">
+                  Switch Role
+                </div>
                 {userRoles.map((role) => (
                   <button
                     key={role.id}
