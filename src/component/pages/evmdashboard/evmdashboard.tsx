@@ -1,6 +1,6 @@
 'use client';
 import React, { use, useState } from 'react';
-import { TrendingUp, TrendingDown, DollarSign, ExternalLink } from 'lucide-react';
+import { TrendingUp, TrendingDown, DollarSign, ExternalLink, HeartPlus, Plus, Activity } from 'lucide-react';
 
 const EVMDashboard = () => {
   const [hoveredBar, setHoveredBar] = useState<'cpi' | 'spi' | null>(null);
@@ -34,7 +34,7 @@ const EVMDashboard = () => {
               <span className="text-sm text-gray-600">Portfolio CPI</span>
               <TrendingUp className="w-5 h-5 text-red-500" />
             </div>
-            <div className="text-3xl font-bold text-gray-900 mb-2">0.91</div>
+            <div className="text-3xl font-bold text-red-500 mb-2">0.91</div>
             <span className="inline-block px-2 py-1 text-xs font-medium text-red-600 bg-red-50 rounded">
               Behind
             </span>
@@ -44,7 +44,7 @@ const EVMDashboard = () => {
           <div className="bg-white rounded-lg border border-gray-200 p-6">
             <div className="flex items-start justify-between mb-3">
               <span className="text-sm text-gray-600">Portfolio SPI</span>
-              <TrendingUp className="w-5 h-5 text-red-500" />
+              <Activity className="w-5 h-5 text-red-500" />
             </div>
             <div className="text-3xl font-bold text-red-500 mb-2">0.89</div>
             <span className="inline-block px-2 py-1 text-xs font-medium text-red-600 bg-red-50 rounded">
@@ -104,69 +104,59 @@ const EVMDashboard = () => {
           <p className="text-sm text-gray-500 mb-6">CPI and SPI comparison across projects</p>
           
           <div className="relative h-64">
-            <div className="absolute inset-0 flex items-end">
-              {/* Y-axis labels */}
-              <div className="absolute left-0 top-0 bottom-0 w-8 flex flex-col justify-between text-xs text-gray-500 pr-2">
-                <span>1</span>
-                <span>0.75</span>
-                <span>0.5</span>
-                <span>0.25</span>
-                <span>0</span>
+            {/* Y-axis labels */}
+            <div className="absolute left-0 top-0 bottom-12 w-16 flex flex-col justify-between text-sm text-gray-600">
+              <span className="text-right pr-3">1</span>
+              <span className="text-right pr-3">0.75</span>
+              <span className="text-right pr-3">0.5</span>
+              <span className="text-right pr-3">0.25</span>
+              <span className="text-right pr-3">0</span>
+            </div>
+            
+            {/* Chart area */}
+            <div className="absolute left-25 right-25 top-0 bottom-12">
+              {/* Gray background when hovering */}
+              {hoveredBar && (
+                <div className="absolute inset-0 bg-gray-200 pointer-events-none"></div>
+              )}
+              
+              {/* Grid lines */}
+              <div className="absolute inset-0 flex flex-col justify-between pointer-events-none">
+                <div className="border-t border-gray-300"></div>
+                <div className="border-t border-gray-300"></div>
+                <div className="border-t border-gray-300"></div>
+                <div className="border-t border-gray-300"></div>
+                <div className="border-t border-gray-300"></div>
               </div>
               
-              {/* Chart area */}
-              <div className="flex-1 ml-8 h-full relative">
-                {/* Grid lines */}
-                <div className="absolute inset-0 flex flex-col justify-between">
-                  <div className="border-t border-gray-200"></div>
-                  <div className="border-t border-gray-200"></div>
-                  <div className="border-t border-gray-200"></div>
-                  <div className="border-t border-gray-200"></div>
-                  <div className="border-t border-gray-200"></div>
-                </div>
-                
-                {/* Bars */}
-                <div className="absolute inset-0 flex items-end gap-0">
+              {/* Bars container */}
+              <div className="absolute inset-0 flex items-end">
+                <div className="flex items-end w-full h-full gap-1">
                   {/* CPI Bar - Green */}
                   <div 
-                    className="flex-1 bg-green-600 cursor-pointer relative"
+                    className="w-1/2 bg-green-600 cursor-pointer relative"
                     style={{ height: '91%' }}
                     onMouseMove={(e) => handleMouseMove(e, 'cpi')}
                     onMouseLeave={handleMouseLeave}
                   >
-                    {hoveredBar === 'cpi' && (
-                      <div 
-                        className="absolute left-1/2 transform -translate-x-1/2 bg-white border border-gray-300 rounded shadow-lg p-3 z-10 whitespace-nowrap"
-                        style={{ 
-                          top: `${mouseY}px`,
-                          pointerEvents: 'none'
-                        }}
-                      >
-                        <div className="text-xs font-semibold text-gray-700 mb-1">Metro Station Constr...</div>
-                        <div className="text-xs text-gray-600">Cost Performance Index: 0.91</div>
-                        <div className="text-xs text-gray-600">Schedule Performance Index: 0.89</div>
-                      </div>
-                    )}
                   </div>
                   
                   {/* SPI Bar - Blue */}
                   <div 
-                    className="flex-1 bg-blue-600 cursor-pointer relative"
+                    className="w-1/2 bg-blue-600 cursor-pointer relative"
                     style={{ height: '89%' }}
                     onMouseMove={(e) => handleMouseMove(e, 'spi')}
                     onMouseLeave={handleMouseLeave}
                   >
-                    {hoveredBar === 'spi' && (
+                    {/* Tooltip - shows when hovering either bar and follows mouse */}
+                    {hoveredBar && (
                       <div 
-                        className="absolute left-1/2 transform -translate-x-1/2 bg-white border border-gray-300 rounded shadow-lg p-3 z-10 whitespace-nowrap"
-                        style={{ 
-                          top: `${mouseY}px`,
-                          pointerEvents: 'none'
-                        }}
+                        className="absolute left-1/3 transform -translate-x-1/2 -translate-y-1/2 bg-white border border-gray-300 rounded shadow-lg p-4 z-20 whitespace-nowrap pointer-events-none"
+                        style={{ top: `${mouseY}px` }}
                       >
-                        <div className="text-xs font-semibold text-gray-700 mb-1">Metro Station Constr...</div>
-                        <div className="text-xs text-gray-600">Cost Performance Index: 0.91</div>
-                        <div className="text-xs text-gray-600">Schedule Performance Index: 0.89</div>
+                        <div className="text-sm font-semibold text-gray-800 mb-2">Metro Station Constr...</div>
+                        <div className="text-sm text-green-600 mb-1">Cost Performance Index : 0.91</div>
+                        <div className="text-sm text-blue-600">Schedule Performance Index : 0.89</div>
                       </div>
                     )}
                   </div>
@@ -175,20 +165,20 @@ const EVMDashboard = () => {
             </div>
             
             {/* X-axis label */}
-            <div className="absolute bottom-0 left-0 right-0 text-center mt-2">
-              <div className="text-xs text-gray-500 pt-2">Metro Station Constr...</div>
+            <div className="absolute bottom-0 left-16 right-0 h-12 flex items-start justify-center pt-2">
+              <span className="text-sm text-gray-600">Metro Station Constr...</span>
             </div>
           </div>
           
           {/* Legend */}
-          <div className="flex justify-center gap-6 mt-4">
+          <div className="flex justify-center gap-8 mt-6">
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-green-600 rounded-sm"></div>
-              <span className="text-sm text-gray-600">Cost Performance Index</span>
+              <div className="w-4 h-4 bg-green-600 rounded"></div>
+              <span className="text-sm text-gray-700">Cost Performance Index</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-blue-600 rounded-sm"></div>
-              <span className="text-sm text-gray-600">Schedule Performance Index</span>
+              <div className="w-4 h-4 bg-blue-600 rounded"></div>
+              <span className="text-sm text-gray-700">Schedule Performance Index</span>
             </div>
           </div>
         </div>
@@ -199,7 +189,7 @@ const EVMDashboard = () => {
           <p className="text-sm text-gray-500 mb-6">Individual project EVM metrics</p>
           
           {/* Project Card */}
-          <div className="border border-gray-200 rounded-lg p-6">
+          <div className="border border-gray-200 rounded-lg p-6 hover:bg-blue-300">
             <div className="flex items-start justify-between mb-4">
               <div>
                 <h3 className="text-base font-semibold text-gray-900 mb-1">
