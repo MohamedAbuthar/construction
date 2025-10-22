@@ -21,7 +21,7 @@ export default function DashboardPage({ userRole = 'Admin' }: DashboardProps) {
   };
 
   return (
-    <div className="space-y-6 lg:space-y-8 mx-4 sm:mx-6 md:mx-8 lg:mx-16 xl:mx-40 my-4 sm:my-6 lg:my-8">
+    <div className="space-y-6 lg:space-y-8 mx-2 sm:mx-3 md:mx-4 lg:mx-6 xl:mx-8 my-4 sm:my-6 lg:my-8">
       {/* Welcome Message as normal text without border */}
       <div className="mt-2 sm:mt-4">
         <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800">

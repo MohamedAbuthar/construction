@@ -36,7 +36,7 @@ export default function ProjectsPage() {
   };
 
   return (
-    <div className="space-y-6 lg:space-y-8 mx-4 sm:mx-6 md:mx-8 lg:mx-16 xl:mx-40 my-4 sm:my-6 lg:my-8">
+<div className="space-y-6 p-4 sm:p-6">
       {/* Header Section */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-0">
         <div>
