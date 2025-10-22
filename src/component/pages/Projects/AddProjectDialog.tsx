@@ -122,60 +122,65 @@ export default function AddProjectDialog({ isOpen, onClose }: AddProjectDialogPr
           {/* Planned Start and End Dates - Side by Side with Calendar */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Planned Start Date
-              </label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !startDate && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {startDate ? format(startDate, "PPP") : "mm/dd/yyyy"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={startDate}
-                    onSelect={setStartDate}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Planned End Date
-              </label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !endDate && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {endDate ? format(endDate, "PPP") : "mm/dd/yyyy"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={endDate}
-                    onSelect={setEndDate}
-                    initialFocus
-                    disabled={startDate ? { before: startDate } : undefined}
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
+  <label className="block text-sm font-medium text-gray-700 mb-2">
+    Planned Start Date
+  </label>
+  <Popover>
+    <PopoverTrigger asChild>
+      <Button
+        variant="outline"
+        className={cn(
+          "w-full min-w-0 max-w-full justify-start text-left font-normal text-sm px-3",
+          !endDate && "text-muted-foreground"
+        )}
+      >
+        <CalendarIcon className="mr-2 h-4 w-4 flex-shrink-0" />
+        <span className="flex-1 min-w-0 text-ellipsis overflow-hidden">
+          {endDate ? format(endDate, "MM/dd/yyyy") : "mm/dd/yyyy"}
+        </span>
+      </Button>
+    </PopoverTrigger>
+    <PopoverContent className="w-auto p-0">
+      <Calendar
+        mode="single"
+        selected={endDate}
+        onSelect={setEndDate}
+        initialFocus
+        disabled={startDate ? { before: startDate } : undefined}
+      />
+    </PopoverContent>
+  </Popover>
+</div>
+<div>
+  <label className="block text-sm font-medium text-gray-700 mb-2">
+    Planned End Date
+  </label>
+  <Popover>
+    <PopoverTrigger asChild>
+      <Button
+        variant="outline"
+        className={cn(
+          "w-full min-w-0 max-w-full justify-start text-left font-normal text-sm px-3",
+          !endDate && "text-muted-foreground"
+        )}
+      >
+        <CalendarIcon className="mr-2 h-4 w-4 flex-shrink-0" />
+        <span className="flex-1 min-w-0 text-ellipsis overflow-hidden">
+          {endDate ? format(endDate, "MM/dd/yyyy") : "mm/dd/yyyy"}
+        </span>
+      </Button>
+    </PopoverTrigger>
+    <PopoverContent className="w-auto p-0">
+      <Calendar
+        mode="single"
+        selected={endDate}
+        onSelect={setEndDate}
+        initialFocus
+        disabled={startDate ? { before: startDate } : undefined}
+      />
+    </PopoverContent>
+  </Popover>
+</div>
           </div>
 
           {/* Latitude and Longitude - Side by Side */}
