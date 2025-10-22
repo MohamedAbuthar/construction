@@ -2,7 +2,7 @@
 'use client';
 
 import { useSearchParams, useRouter } from 'next/navigation';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import { MapPin, Calendar, DollarSign, Plus, TrendingDown, ArrowLeft } from 'lucide-react';
 import AddMilestoneDialog from '@/component/pages/Projects/AddMilestoneDialog';
 import AddActivityDialog from '@/component/pages/Projects/AddActivityDialog';
@@ -258,7 +258,8 @@ function StatsCard({ title, value, icon: Icon }: { title: string; value: string;
   );
 }
 
-export default function ProjectViewContent() {
+// Main Content Component (with useSearchParams)
+function ProjectViewContentInner() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const projectId = searchParams.get('id');
@@ -793,5 +794,26 @@ export default function ProjectViewContent() {
         onClose={() => setIsSnapshotDialogOpen(false)} 
       />
     </div>
+  );
+}
+
+// Main exported component with Suspense boundary
+export default function ProjectViewContent() {
+  return (
+    <Suspense fallback={
+      <div className="space-y-6 lg:space-y-8 mx-4 sm:mx-6 md:mx-8 lg:mx-16 xl:mx-40 my-4 sm:my-6 lg:my-8">
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-200 rounded w-3/4 mb-4"></div>
+          <div className="h-4 bg-gray-200 rounded w-1/2 mb-8"></div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="bg-gray-200 rounded-lg h-28"></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    }>
+      <ProjectViewContentInner />
+    </Suspense>
   );
 }
