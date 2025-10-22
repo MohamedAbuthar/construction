@@ -10,7 +10,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from '@/component/ui/dialog';
 
 const INITIAL_STATS: FundRequestStats = {
@@ -80,13 +79,13 @@ export default function Approvals() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'under-review':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-white-100 text-gray-800 rounded-full border border-gray-300';
       case 'approved':
-        return 'bg-green-100 text-green-800';
+        return 'bg-white-100 text-gray-800 rounded-full border border-gray-300';
       case 'rejected':
-        return 'bg-red-100 text-red-800';
+        return 'bg-white-100 text-gray-800 rounded-full border border-gray-300';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-white-100 text-gray-800 rounded-full border border-gray-300';
     }
   };
 
@@ -198,8 +197,8 @@ export default function Approvals() {
       {/* Fund Requests Table */}
       <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-6">
         <div className="mb-6">
-          <h2 className="text-xl font-bold text-gray-900">Fund Requests</h2>
-          <p className="text-sm text-gray-600">Requests awaiting your approval</p>
+          <h2 className="text-2xl font-semibold text-gray-900">Fund Requests</h2>
+          <p className="text-sm text-gray-500">Requests awaiting your approval</p>
         </div>
 
         {/* Table */}
@@ -207,12 +206,12 @@ export default function Approvals() {
           <table className="w-full">
             <thead>
               <tr className="border-b-2 border-gray-300 bg-gray-50">
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Week</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Engineer</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Milestone</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Amount</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
-                <th className="px-6 py-3 text-center text-sm font-semibold text-gray-700">Action</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500">Week</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500">Engineer</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500">Milestone</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500">Amount</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500">Status</th>
+                <th className="px-6 py-3 text-center text-sm font-semibold text-gray-500"></th>
               </tr>
             </thead>
             <tbody>
@@ -241,10 +240,10 @@ export default function Approvals() {
                     <td className="px-6 py-4 text-center">
                       <button
                         onClick={() => handleViewDetails(request)}
-                        className="inline-flex items-center justify-center p-2 hover:bg-gray-100 rounded-lg transition"
+                        className="inline-flex items-center justify-center p-2 hover:bg-blue-600 rounded-lg transition"
                         title="View details"
                       >
-                        <FileText size={18} className="text-gray-400 hover:text-gray-600" />
+                        <FileText size={18} className="text-white-800 hover:text-blue-800" />
                       </button>
                     </td>
                   </tr>
@@ -263,137 +262,134 @@ export default function Approvals() {
 
       {/* Fund Request Details Dialog */}
       <Dialog open={isDetailsDialogOpen} onOpenChange={setIsDetailsDialogOpen}>
-        <DialogContent className="bg-white max-w-2xl">
-          <DialogHeader>
-            <DialogTitle className="text-gray-900 text-xl font-bold">
+        <DialogContent className="fixed left-[50%] top-[50%] z-50 grid w-full translate-x-[-50%] translate-y-[-50%] gap-4 border p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[72%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg max-w-2xl bg-card bg-white max-w-[600px] w-full max-h-[90vh] overflow-hidden flex flex-col">
+          <DialogHeader className="px-6 py-4 border-b border-gray-200 flex-shrink-0">
+            <DialogTitle className="text-gray-900 text-base font-semibold">
               Fund Request Details
             </DialogTitle>
-            <DialogDescription className="text-gray-600">
+            <DialogDescription className="text-gray-600 text-sm mt-1">
               Review the request and provide your decision
             </DialogDescription>
           </DialogHeader>
 
           {selectedRequest && (
-            <div className="space-y-6 py-4">
-              {/* Table-like layout for Engineer and Milestone */}
-              <div className="border border-gray-200 rounded-lg overflow-hidden">
-                <table className="w-full">
-                  <tbody>
-                    <tr className="border-b border-gray-200">
-                      <td className="px-4 py-3 text-sm font-medium text-gray-700 bg-gray-50 w-1/2 border-r border-gray-200">
-                        Engineer
-                      </td>
-                      <td className="px-4 py-3 text-sm font-medium text-gray-700 bg-gray-50 w-1/2">
-                        Milestone
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="px-4 py-3 text-sm font-semibold text-gray-900 border-r border-gray-200">
-                        {selectedRequest.engineer}
-                      </td>
-                      <td className="px-4 py-3 text-sm font-semibold text-gray-900">
-                        {selectedRequest.milestone}
-                      </td>
-                    </tr>
-                    <tr className="border-t border-gray-200">
-                      <td className="px-4 py-3 text-sm font-medium text-gray-700 bg-gray-50 border-r border-gray-200">
-                        Week Start
-                      </td>
-                      <td className="px-4 py-3 text-sm font-medium text-gray-700 bg-gray-50">
-                        Amount
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="px-4 py-3 text-sm font-semibold text-gray-900 border-r border-gray-200">
-                        {selectedRequest.week}
-                      </td>
-                      <td className="px-4 py-3 text-sm font-semibold text-gray-900">
-                        {formatCurrency(selectedRequest.amount)}
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Description */}
-              <div>
-                <h3 className="text-sm font-medium text-gray-700 mb-2">Description</h3>
-                <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
-                  <p className="text-sm text-gray-900">{selectedRequest.description}</p>
-                </div>
-              </div>
-
-              {/* Status and Decision Note in two columns */}
-              <div className="grid grid-cols-2 gap-6">
-                {/* Status */}
-                <div>
-                  <h3 className="text-sm font-medium text-gray-700 mb-2">Status</h3>
-                  <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
-                    <span className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${getStatusColor(selectedRequest.status)}`}>
-                      {getStatusLabel(selectedRequest.status)}
-                    </span>
+            <div className="overflow-y-auto flex-1">
+              <div className="px-6 py-4 space-y-4">
+                {/* Engineer & Milestone */}
+                <div className="grid grid-cols-2 gap-8">
+                  <div>
+                    <p className="text-xs font-semibold text-gray-600 mb-2">Engineer</p>
+                    <p className="text-sm text-gray-900">{selectedRequest.engineer}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold text-gray-600 mb-2">Milestone</p>
+                    <p className="text-sm text-gray-900">{selectedRequest.milestone}</p>
                   </div>
                 </div>
 
-                {/* Decision Note (only for pending requests) */}
-                {selectedRequest.status === 'under-review' && (
+                {/* Week Start & Amount */}
+                <div className="grid grid-cols-2 gap-8">
                   <div>
-                    <h3 className="text-sm font-medium text-gray-700 mb-2">
-                      Decision Note
-                      <span className="text-red-500 ml-1">*</span>
-                    </h3>
-                    <textarea
-                      value={decisionNote}
-                      onChange={(e) => setDecisionNote(e.target.value)}
-                      placeholder="Enter your decision note (required for rejection)..."
-                      rows={3}
-                      className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-0 text-gray-900 resize-none transition-colors"
-                    />
+                    <p className="text-xs font-semibold text-gray-600 mb-2">Week Start</p>
+                    <p className="text-sm text-gray-900">{selectedRequest.week}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold text-gray-600 mb-2">Amount</p>
+                    <p className="text-sm text-gray-900">{formatCurrency(selectedRequest.amount)}</p>
+                  </div>
+                </div>
+
+                {/* Description */}
+                <div>
+                  <p className="text-xs font-semibold text-gray-600 mb-2">Description</p>
+                  <p className="text-sm text-gray-900">{selectedRequest.description}</p>
+                </div>
+
+                {/* Status */}
+                <div>
+                  <p className="text-xs font-semibold text-gray-600 mb-2">Status</p>
+                  {selectedRequest.status === 'under-review' && (
+                    <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-orange-500 text-white">
+                      Under Review
+                    </span>
+                  )}
+                  {selectedRequest.status === 'approved' && (
+                    <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-600 text-white">
+                      Approved
+                    </span>
+                  )}
+                  {selectedRequest.status === 'rejected' && (
+                    <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-600 text-white">
+                      Rejected
+                    </span>
+                  )}
+                </div>
+
+                {/* Decision Section - Different for each status */}
+                {selectedRequest.status === 'under-review' && (
+                  <div className="space-y-3">
+                    <div>
+                      <p className="text-xs font-semibold text-gray-600 mb-2">Decision Note</p>
+                      <textarea
+                        value={decisionNote}
+                        onChange={(e) => setDecisionNote(e.target.value)}
+                        placeholder="Enter your decision note (required for rejection)..."
+                        rows={3}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-0 text-sm text-gray-900 resize-none transition-colors"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {selectedRequest.status === 'approved' && (
+                  <div>
+                    <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                      <div className="flex items-center justify-between mb-2">
+                        <p className="text-sm font-semibold text-gray-900">Decision</p>
+                        <span className="text-xs font-semibold text-green-700 bg-green-100 px-2 py-1 rounded">Approved</span>
+                      </div>
+                      <p className="text-sm text-gray-700">Approved as per budget allocation</p>
+                      <p className="text-xs text-gray-500 mt-2">Decided on 10/14/2025, 4:00:00 PM</p>
+                    </div>
+                  </div>
+                )}
+
+                {selectedRequest.status === 'rejected' && (
+                  <div>
+                    <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                      <div className="flex items-center justify-between mb-2">
+                        <p className="text-sm font-semibold text-gray-900">Decision</p>
+                        <span className="text-xs font-semibold text-red-700 bg-red-100 px-2 py-1 rounded">Rejected</span>
+                      </div>
+                      <p className="text-sm text-gray-700">Budget already exhausted for this period. Please revise.</p>
+                      <p className="text-xs text-gray-500 mt-2">Decided on 10/8/2025, 7:50:00 PM</p>
+                    </div>
                   </div>
                 )}
               </div>
             </div>
           )}
 
-          <DialogFooter className="flex gap-3 sm:justify-between">
-            <Button
-              variant="outline"
-              onClick={() => setIsDetailsDialogOpen(false)}
-              className="flex-1"
-            >
-              Close
-            </Button>
-            
-            {selectedRequest?.status === 'under-review' && (
-              <div className="flex gap-3 flex-1">
-                <Button
-                  variant="outline"
-                  onClick={handleReject}
-                  disabled={!decisionNote.trim()}
-                  className="flex items-center gap-2 flex-1 bg-red-600 text-white hover:bg-red-700 border-red-600 disabled:bg-gray-400 disabled:border-gray-400"
-                >
-                  <XCircle size={18} />
-                  Reject
-                </Button>
-                <Button
-                  onClick={handleApprove}
-                  className="flex items-center gap-2 flex-1 bg-green-600 hover:bg-green-700"
-                >
-                  <CheckCircle size={18} />
-                  Approve
-                </Button>
-              </div>
-            )}
-            
-            {selectedRequest?.status !== 'under-review' && (
-              <Button
-                onClick={() => setIsDetailsDialogOpen(false)}
-                className="flex-1"
+          {/* Buttons - Fixed at bottom */}
+          {selectedRequest?.status === 'under-review' && (
+            <div className="px-6 py-4 border-t border-gray-200 flex gap-3 justify-end flex-shrink-0 bg-white">
+              <button
+                onClick={handleReject}
+                disabled={!decisionNote.trim()}
+                className="flex items-center gap-2 px-3 py-1.5 rounded text-xs font-semibold text-gray-700 border border-gray-300 bg-white hover:bg-gray-50 disabled:bg-gray-100 disabled:text-gray-400 disabled:border-gray-300 transition"
               >
-                Close
-              </Button>
-            )}
-          </DialogFooter>
+                <XCircle size={14} />
+                Reject
+              </button>
+              <button
+                onClick={handleApprove}
+                className="flex items-center gap-2 px-4 py-1.5 rounded text-xs font-semibold bg-blue-600 text-white hover:bg-blue-700 transition"
+              >
+                <CheckCircle size={14} />
+                Approve
+              </button>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </div>
