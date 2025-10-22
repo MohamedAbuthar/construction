@@ -65,161 +65,164 @@ export default function AddProjectDialog({ isOpen, onClose }: AddProjectDialogPr
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-2xl">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-2xl flex flex-col max-h-[90vh]">
+        <DialogHeader className="flex-shrink-0 pb-4">
           <DialogTitle>Create New Project</DialogTitle>
           <DialogDescription>
             Add a new construction project to your portfolio
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-6 mt-4">
-          {/* Project Name - Full Width */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Project Name *
-            </label>
-            <input
-              type="text"
-              placeholder="Enter project name"
-              value={projectName}
-              onChange={(e) => setProjectName(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
-
-          {/* Status and Project Value - Side by Side */}
-          <div className="grid grid-cols-2 gap-4">
+        {/* Scrollable Form Content */}
+        <div className="flex-1 overflow-y-auto px-1">
+          <div className="space-y-4">
+            {/* Project Name - Full Width */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Status
-              </label>
-              <select
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="Planned">Planned</option>
-                <option value="Ongoing">Ongoing</option>
-                <option value="Completed">Completed</option>
-                <option value="On Hold">On Hold</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Project Value
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Project Name *
               </label>
               <input
                 type="text"
-                placeholder="0.00"
-                value={projectValue}
-                onChange={(e) => setProjectValue(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Enter project name"
+                value={projectName}
+                onChange={(e) => setProjectName(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
               />
             </div>
-          </div>
 
-          {/* Planned Start and End Dates - Side by Side with Calendar */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-  <label className="block text-sm font-medium text-gray-700 mb-2">
-    Planned Start Date
-  </label>
-  <Popover>
-    <PopoverTrigger asChild>
-      <Button
-        variant="outline"
-        className={cn(
-          "w-full min-w-0 max-w-full justify-start text-left font-normal text-sm px-3",
-          !endDate && "text-muted-foreground"
-        )}
-      >
-        <CalendarIcon className="mr-2 h-4 w-4 flex-shrink-0" />
-        <span className="flex-1 min-w-0 text-ellipsis overflow-hidden">
-          {endDate ? format(endDate, "MM/dd/yyyy") : "mm/dd/yyyy"}
-        </span>
-      </Button>
-    </PopoverTrigger>
-    <PopoverContent className="w-auto p-0">
-      <Calendar
-        mode="single"
-        selected={endDate}
-        onSelect={setEndDate}
-        initialFocus
-        disabled={startDate ? { before: startDate } : undefined}
-      />
-    </PopoverContent>
-  </Popover>
-</div>
-<div>
-  <label className="block text-sm font-medium text-gray-700 mb-2">
-    Planned End Date
-  </label>
-  <Popover>
-    <PopoverTrigger asChild>
-      <Button
-        variant="outline"
-        className={cn(
-          "w-full min-w-0 max-w-full justify-start text-left font-normal text-sm px-3",
-          !endDate && "text-muted-foreground"
-        )}
-      >
-        <CalendarIcon className="mr-2 h-4 w-4 flex-shrink-0" />
-        <span className="flex-1 min-w-0 text-ellipsis overflow-hidden">
-          {endDate ? format(endDate, "MM/dd/yyyy") : "mm/dd/yyyy"}
-        </span>
-      </Button>
-    </PopoverTrigger>
-    <PopoverContent className="w-auto p-0">
-      <Calendar
-        mode="single"
-        selected={endDate}
-        onSelect={setEndDate}
-        initialFocus
-        disabled={startDate ? { before: startDate } : undefined}
-      />
-    </PopoverContent>
-  </Popover>
-</div>
-          </div>
-
-          {/* Latitude and Longitude - Side by Side */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Latitude
-              </label>
-              <input
-                type="number"
-                step="any"
-                placeholder="0.000000"
-                value={latitude}
-                onChange={(e) => setLatitude(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
+            {/* Status and Project Value - Side by Side */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Status
+                </label>
+                <select
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                >
+                  <option value="Planned">Planned</option>
+                  <option value="Ongoing">Ongoing</option>
+                  <option value="Completed">Completed</option>
+                  <option value="On Hold">On Hold</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Project Value
+                </label>
+                <input
+                  type="text"
+                  placeholder="0.00"
+                  value={projectValue}
+                  onChange={(e) => setProjectValue(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                />
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Longitude
-              </label>
-              <input
-                type="number"
-                step="any"
-                placeholder="0.000000"
-                value={longitude}
-                onChange={(e) => setLongitude(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
+
+            {/* Planned Start and End Dates - Side by Side with Calendar */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Planned Start Date
+                </label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal text-xs h-9 px-2",
+                        !startDate && "text-gray-400"
+                      )}
+                    >
+                      <CalendarIcon className="mr-1 h-3 w-3 flex-shrink-0" />
+                      <span className="whitespace-nowrap text-xs">
+                        {startDate ? format(startDate, "MM/dd/yyyy") : "mm/dd/yyyy"}
+                      </span>
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={startDate}
+                      onSelect={setStartDate}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Planned End Date
+                </label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal text-xs h-9 px-2",
+                        !endDate && "text-gray-400"
+                      )}
+                    >
+                      <CalendarIcon className="mr-1 h-3 w-3 flex-shrink-0" />
+                      <span className="whitespace-nowrap text-xs">
+                        {endDate ? format(endDate, "MM/dd/yyyy") : "mm/dd/yyyy"}
+                      </span>
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={endDate}
+                      onSelect={setEndDate}
+                      initialFocus
+                      disabled={startDate ? { before: startDate } : undefined}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+            </div>
+
+            {/* Latitude and Longitude - Side by Side */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Latitude
+                </label>
+                <input
+                  type="number"
+                  step="any"
+                  placeholder="0.000000"
+                  value={latitude}
+                  onChange={(e) => setLatitude(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Longitude
+                </label>
+                <input
+                  type="number"
+                  step="any"
+                  placeholder="0.000000"
+                  value={longitude}
+                  onChange={(e) => setLongitude(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                />
+              </div>
             </div>
           </div>
         </div>
 
-        <DialogFooter className="mt-6">
-          <Button variant="outline" onClick={handleCancel}>
+        {/* Footer - Always visible */}
+        <DialogFooter className="flex-shrink-0 mt-4 pt-4 border-t">
+          <Button variant="outline" onClick={handleCancel} className="text-sm">
             Cancel
           </Button>
           <Button 
-            className="bg-blue-600 text-white hover:bg-blue-700"
+            className="bg-blue-600 text-white hover:bg-blue-700 text-sm"
             onClick={handleCreateProject}
           >
             Create Project
