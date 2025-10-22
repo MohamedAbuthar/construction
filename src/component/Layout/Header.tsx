@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Shield, Menu, X } from 'lucide-react';
+import { Shield, PanelLeft } from 'lucide-react';
 
 interface HeaderProps {
   onToggleSidebar: () => void;
@@ -56,20 +56,22 @@ const Header: React.FC<HeaderProps> = ({
       <div className="grid grid-cols-[auto_1fr_auto] items-center px-4 md:px-6 h-full">
         {/* Left Section - Sidebar Buttons */}
         <div className="flex items-center space-x-2">
+          {/* Mobile Sidebar Toggle */}
           <button
             onClick={onToggleMobileSidebar}
             className="p-2 text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-100 transition-colors md:hidden"
             aria-label="Open menu"
           >
-            <Menu size={20} />
+            <PanelLeft size={20} />
           </button>
 
+          {/* Desktop Sidebar Toggle */}
           <button
             onClick={onToggleSidebar}
             className="p-2 text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-100 transition-colors hidden md:inline-flex items-center"
             aria-label={isSidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
           >
-            {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
+            <PanelLeft size={20} />
           </button>
         </div>
 
