@@ -449,7 +449,7 @@ function ProjectViewContentInner() {
   };
 
   return (
-    <div className="space-y-6 lg:space-y-8 mx-4 sm:mx-6 md:mx-8 lg:mx-16 xl:mx-40 my-4 sm:my-6 lg:my-8">
+    <div className="space-y-6 lg:space-y-8 mx-2 sm:mx-3 md:mx-4 lg:mx-6 xl:mx-8 my-4 sm:my-6 lg:my-8">
       {/* Header with Back Button */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0">
         <div className="flex items-center gap-3">
