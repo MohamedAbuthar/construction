@@ -2,17 +2,15 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { 
   LayoutDashboard, 
   FolderKanban, 
-   
   ShoppingCart, 
   DollarSign, 
-   
   Users,
   Settings,
   ChartNoAxesGantt,
-  
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -26,6 +24,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   isMobileOpen = false, 
   onMobileToggle 
 }) => {
+  const pathname = usePathname();
+
   const menuItems = [
     { name: 'Dashboard', icon: LayoutDashboard, href: '/Dashboard' },
     { name: 'Projects', icon: FolderKanban, href: '/projects' },
@@ -36,6 +36,14 @@ const Sidebar: React.FC<SidebarProps> = ({
     { name: 'Users', icon: Users, href: '/users' },
     { name: 'Settings', icon: Settings, href: '/settings' },
   ];
+
+  // Function to check if a menu item is active
+  const isActive = (href: string) => {
+    if (href === '/Dashboard') {
+      return pathname === '/Dashboard';
+    }
+    return pathname.startsWith(href);
+  };
 
   const sidebarContent = (
     <div
@@ -71,25 +79,44 @@ const Sidebar: React.FC<SidebarProps> = ({
       <nav className="flex-1 overflow-y-auto">
         {menuItems.map((item) => {
           const IconComponent = item.icon;
+          const active = isActive(item.href);
 
           return (
             <Link
               key={item.name}
               href={item.href}
-              className={`flex items-center px-3 py-2 text-gray-300 hover:bg-gray-800 hover:text-white transition-colors
+              className={`group flex items-center px-3 py-2 text-gray-300 transition-colors relative
                 ${isCollapsed ? 'justify-center' : ''}
+                ${active 
+                  ? 'bg-blue-600 text-white border-r-2 border-blue-400' 
+                  : 'hover:bg-gray-800 hover:text-white'
+                }
               `}
               onClick={onMobileToggle}
             >
-              <IconComponent size={18} className="flex-shrink-0" />
+              <IconComponent 
+                size={18} 
+                className="flex-shrink-0" 
+                strokeWidth={active ? 2.5 : 1.5}
+              />
               {!isCollapsed && (
-                <span className="ml-2 text-sm font-medium">{item.name}</span>
+                <span className={`ml-2 text-sm font-medium ${active ? 'font-semibold' : ''}`}>
+                  {item.name}
+                </span>
+              )}
+
+              {/* Active indicator dot for collapsed state */}
+              {isCollapsed && active && (
+                <div className="absolute top-1/2 -right-1 w-1 h-4 bg-blue-400 rounded-l transform -translate-y-1/2"></div>
               )}
 
               {/* Tooltip when collapsed */}
               {isCollapsed && (
                 <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded border border-gray-700 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
                   {item.name}
+                  {active && (
+                    <div className="absolute left-0 top-1/2 -ml-1 w-1 h-4 bg-blue-400 rounded-r transform -translate-y-1/2"></div>
+                  )}
                 </div>
               )}
             </Link>
