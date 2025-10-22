@@ -449,7 +449,7 @@ function ProjectViewContentInner() {
   };
 
   return (
-    <div className="space-y-6 lg:space-y-8 mx-4 sm:mx-6 md:mx-8 lg:mx-16 xl:mx-40 my-4 sm:my-6 lg:my-8">
+    <div className="space-y-6 lg:space-y-8 mx-2 sm:mx-3 md:mx-4 lg:mx-6 xl:mx-8 my-4 sm:my-6 lg:my-8">
       {/* Header with Back Button */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0">
         <div className="flex items-center gap-3">
@@ -689,90 +689,123 @@ function ProjectViewContentInner() {
           )}
 
           {activeTab === 'evm' && (
-            <div className="space-y-6">
-              {/* EVM Stats Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-                <StatsCard 
-                  title="Cost variance (CV)" 
-                  value="₹30,00,000" 
-                  icon={TrendingDown}
-                />
-                <StatsCard 
-                  title="Schedule variance (SV)" 
-                  value="₹25,00,000" 
-                  icon={TrendingDown}
-                />
-                <StatsCard 
-                  title="Cost Performance Index (CPI)" 
-                  value="0.91" 
-                  icon={TrendingDown}
-                />
-                <StatsCard 
-                  title="Schedule Performance Index (SPI)" 
-                  value="0.89" 
-                  icon={TrendingDown}
-                />
-              </div>
+  <div className="space-y-4 sm:space-y-6 lg:space-y-8">
+    {/* EVM Stats Cards */}
+    <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
+      <div className="bg-red-100 rounded-lg shadow-sm border border-red-200 p-4 sm:p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-gray-500 font-medium text-sm sm:text-base whitespace-nowrap">Cost variance (CV)</h3>
+            <p className="text-red-500 text-xl sm:text-2xl lg:text-3xl font-bold mt-1">₹30,00,000</p>
+          </div>
+          <TrendingDown className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 text-red-500" />
+        </div>
+      </div>
+      <div className="bg-red-100 rounded-lg shadow-sm border border-red-200 p-4 sm:p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-gray-500 font-medium text-sm sm:text-base whitespace-nowrap">Schedule variance (SV)</h3>
+            <p className="text-red-500 text-xl sm:text-2xl lg:text-3xl font-bold mt-1">₹25,00,000</p>
+          </div>
+          <TrendingDown className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 text-red-500" />
+        </div>
+      </div>
+      <div className="bg-red-100 rounded-lg shadow-sm border border-red-200 p-4 sm:p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-gray-500 font-medium text-sm sm:text-base whitespace-nowrap">Cost Performance Index (CPI)</h3>
+            <p className="text-red-500 text-xl sm:text-2xl lg:text-3xl font-bold mt-1">0.91</p>
+          </div>
+          <TrendingDown className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 text-red-500" />
+        </div>
+      </div>
+      <div className="bg-red-100 rounded-lg shadow-sm border border-red-200 p-4 sm:p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-gray-500 font-medium text-sm sm:text-base whitespace-nowrap">Schedule Performance Index (SPI)</h3>
+            <p className="text-red-500 text-xl sm:text-2xl lg:text-3xl font-bold mt-1">0.89</p>
+          </div>
+          <TrendingDown className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 text-red-500" />
+        </div>
+      </div>
+    </div>
 
-              {/* EVM Chart with Add Snapshot Button */}
-              <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6 relative">
-                {/* Add Snapshot Button at Top Right */}
-                <div className="absolute top-4 right-4 z-10">
-                  <button 
-                    onClick={() => setIsSnapshotDialogOpen(true)}
-                    className="flex items-center space-x-2 bg-blue-600 text-white px-3 sm:px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors shadow-md"
-                  >
-                    <Plus className="w-4 h-4" />
-                    <span className="text-base">Add Snapshot</span>
-                  </button>
-                </div>
+    {/* EVM Chart with Add Snapshot Button */}
+    <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4 lg:p-6 relative">
+      {/* Add Snapshot Button - Responsive positioning */}
+      <div className="absolute top-3 right-3 sm:top-4 sm:right-4 lg:top-6 lg:right-6 z-10">
+        <button 
+          onClick={() => setIsSnapshotDialogOpen(true)}
+          className="flex items-center space-x-1 sm:space-x-2 bg-blue-600 text-white px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 rounded-md sm:rounded-lg hover:bg-blue-700 transition-colors shadow-sm sm:shadow-md text-sm sm:text-base"
+        >
+          <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
+          <span>Add Snapshot</span>
+        </button>
+      </div>
 
-                {/* EVM Trend Header */}
-                <div className="mb-4">
-                  <h2 className="text-lg sm:text-xl font-bold text-gray-800 mb-1 sm:mb-2">EVM Trend</h2>
-                  <p className="text-gray-600 text-base">Planned Value vs Earned Value vs Actual Cost</p>
-                </div>
+      {/* EVM Trend Header */}
+      <div className="mb-3 sm:mb-4 lg:mb-6 pr-16 sm:pr-20 lg:pr-24">
+        <h2 className="text-base sm:text-lg lg:text-xl font-bold text-gray-800 mb-1 sm:mb-2">EVM Trend</h2>
+        <p className="text-gray-600 text-sm sm:text-base">Planned Value vs Earned Value vs Actual Cost</p>
+      </div>
 
-                {/* EVM Chart */}
-                <div className="h-64 sm:h-80 lg:h-96 mt-4">
-                  <EVMChart />
-                </div>
-              </div>
+      {/* EVM Chart - Responsive height */}
+      <div className="h-48 xs:h-56 sm:h-64 md:h-72 lg:h-80 xl:h-96 mt-3 sm:mt-4">
+        <EVMChart />
+      </div>
 
-              {/* EVM Formulas Section */}
-              <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
-                <h3 className="text-lg font-bold text-gray-800 mb-3 sm:mb-4">EVM Formulas</h3>
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-                  <div>
-                    <h4 className="font-semibold text-gray-700 mb-2 text-base">Variance Formulas</h4>
-                    <div className="space-y-3">
-                      <div>
-                        <p className="text-gray-900 font-medium text-base">Cost Variance (CV)</p>
-                        <p className="text-gray-500 text-sm">EV - AC = ₹30,00,000</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-900 font-medium text-base">Schedule Variance (SV)</p>
-                        <p className="text-gray-500 text-sm">EV - PV = ₹25,00,000</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-700 mb-2 text-base">Performance Index</h4>
-                    <div className="space-y-3">
-                      <div>
-                        <p className="text-gray-900 font-medium text-base">Cost Performance Index (CPI)</p>
-                        <p className="text-gray-500 text-sm">EV / AC = 0.91</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-900 font-medium text-base">Schedule Performance Index (SPI)</p>
-                        <p className="text-gray-500 text-sm">EV / PV = 0.89</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+      {/* Chart Legend - Fixed positioning */}
+      <div className="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-4 lg:gap-6 mt-4 sm:mt-6">
+        <div className="flex items-center space-x-2">
+          <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+          <span className="text-xs sm:text-sm text-gray-600">Planned Value</span>
+        </div>
+        <div className="flex items-center space-x-2">
+          <div className="w-3 h-3 rounded-full bg-green-500"></div>
+          <span className="text-xs sm:text-sm text-gray-600">Earned Value</span>
+        </div>
+        <div className="flex items-center space-x-2">
+          <div className="w-3 h-3 rounded-full bg-red-500"></div>
+          <span className="text-xs sm:text-sm text-gray-600">Actual Cost</span>
+        </div>
+      </div>
+    </div>
+
+    {/* EVM Formulas Section */}
+    <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4 lg:p-6">
+      <h3 className="text-base sm:text-lg lg:text-xl font-bold text-gray-800 mb-3 sm:mb-4 lg:mb-6">EVM Formulas</h3>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5 lg:gap-6">
+        <div>
+          <h4 className="font-semibold text-gray-700 mb-2 sm:mb-3 text-sm sm:text-base">Variance Formulas</h4>
+          <div className="space-y-2 sm:space-y-3">
+            <div>
+              <p className="text-gray-900 font-medium text-sm sm:text-base">Cost Variance (CV)</p>
+              <p className="text-gray-500 text-xs sm:text-sm">EV - AC = ₹30,00,000</p>
             </div>
-          )}
+            <div>
+              <p className="text-gray-900 font-medium text-sm sm:text-base">Schedule Variance (SV)</p>
+              <p className="text-gray-500 text-xs sm:text-sm">EV - PV = ₹25,00,000</p>
+            </div>
+          </div>
+        </div>
+        <div>
+          <h4 className="font-semibold text-gray-700 mb-2 sm:mb-3 text-sm sm:text-base">Performance Index</h4>
+          <div className="space-y-2 sm:space-y-3">
+            <div>
+              <p className="text-gray-900 font-medium text-sm sm:text-base">Cost Performance Index (CPI)</p>
+              <p className="text-gray-500 text-xs sm:text-sm">EV / AC = 0.91</p>
+            </div>
+            <div>
+              <p className="text-gray-900 font-medium text-sm sm:text-base">Schedule Performance Index (SPI)</p>
+              <p className="text-gray-500 text-xs sm:text-sm">EV / PV = 0.89</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+          
         </div>
       </div>
 

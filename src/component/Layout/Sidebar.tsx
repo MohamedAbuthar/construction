@@ -4,13 +4,15 @@ import React from 'react';
 import Link from 'next/link';
 import { 
   LayoutDashboard, 
-  Folder, 
-  BarChart3, 
+  FolderKanban, 
+   
   ShoppingCart, 
-  CheckSquare, 
-  TrendingUp, 
+  DollarSign, 
+   
   Users,
-  Settings
+  Settings,
+  ChartNoAxesGantt,
+  
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -26,11 +28,11 @@ const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const menuItems = [
     { name: 'Dashboard', icon: LayoutDashboard, href: '/Dashboard' },
-    { name: 'Projects', icon: Folder, href: '/projects' },
-    { name: 'Gantt Chart', icon: BarChart3, href: '/ganttchart' },
+    { name: 'Projects', icon: FolderKanban, href: '/projects' },
+    { name: 'Gantt Chart', icon: ChartNoAxesGantt, href: '/ganttchart' },
     { name: 'Procurement', icon: ShoppingCart, href: '/procurement' },
-    { name: 'Approvals', icon: CheckSquare, href: '/approval' },
-    { name: 'EVM Dashboard', icon: TrendingUp, href: '/evmdashboard' },
+    { name: 'Approvals', icon: DollarSign, href: '/approval' },
+    { name: 'EVM Dashboard', icon: ChartNoAxesGantt, href: '/evmdashboard' },
     { name: 'Users', icon: Users, href: '/users' },
     { name: 'Settings', icon: Settings, href: '/settings' },
   ];

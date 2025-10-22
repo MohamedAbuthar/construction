@@ -3,7 +3,7 @@
 
 import AddProjectDialog from '@/component/pages/Projects/AddProjectDialog';
 import AddActivityDialog from '@/component/pages/Projects/AddActivityDialog';
-import { Search, Plus, MapPin, Calendar, Link2Icon } from 'lucide-react';
+import { Search, Plus, MapPin, Calendar, Link2Icon, ExternalLink } from 'lucide-react';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -132,10 +132,11 @@ export default function ProjectsPage() {
                     {/* ArrowRight icon for navigation */}
                     <button
                       onClick={() => handleProjectClick(project.id)}
-                      className="inline-flex items-center p-1 sm:p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-colors"
+                      className="inline-flex items-center p-1 sm:p-2 text-grey-600 hover:text-blue-900 hover:bg-blue-50 rounded-lg transition-colors"
                       title="View Project Details"
                     >
-                      <Link2Icon className="w-4 h-4 sm:w-5 sm:h-5" />
+                      <ExternalLink 
+                      className="w-4 h-4 sm:w-5 sm:h-5" />
                     </button>
                   </td>
                 </tr>
