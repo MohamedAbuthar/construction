@@ -10,7 +10,11 @@ import {
   DialogClose,
 } from '@/component/ui/dialog';
 import { Button } from '@/component/ui/button';
+import { Calendar } from '@/component/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/component/ui/popover';
+import { CalendarIcon } from 'lucide-react';
 import { useState } from 'react';
+import { cn } from '@/lib/utils';
 
 interface AddActivityDialogProps {
   isOpen: boolean;
@@ -18,8 +22,11 @@ interface AddActivityDialogProps {
 }
 
 export default function AddActivityDialog({ isOpen, onClose }: AddActivityDialogProps) {
+  const [activityName, setActivityName] = useState('');
   const [milestone, setMilestone] = useState('');
   const [status, setStatus] = useState('');
+  const [startDate, setStartDate] = useState<Date>();
+  const [endDate, setEndDate] = useState<Date>();
 
   const milestones = [
     'Foundation Work',
@@ -33,6 +40,33 @@ export default function AddActivityDialog({ isOpen, onClose }: AddActivityDialog
     'Done',
     'Blocked'
   ];
+
+  const handleAddActivity = () => {
+    // Handle activity creation logic here
+    console.log({
+      activityName,
+      milestone,
+      status,
+      startDate,
+      endDate,
+    });
+    // Reset form and close dialog
+    resetForm();
+    onClose();
+  };
+
+  const handleCancel = () => {
+    resetForm();
+    onClose();
+  };
+
+  const resetForm = () => {
+    setActivityName('');
+    setMilestone('');
+    setStatus('');
+    setStartDate(undefined);
+    setEndDate(undefined);
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -54,6 +88,8 @@ export default function AddActivityDialog({ isOpen, onClose }: AddActivityDialog
             <input
               type="text"
               placeholder="Enter Activity name"
+              value={activityName}
+              onChange={(e) => setActivityName(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
@@ -96,27 +132,62 @@ export default function AddActivityDialog({ isOpen, onClose }: AddActivityDialog
             </select>
           </div>
 
-          {/* Planned Dates */}
+          {/* Planned Dates with Calendar */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Planned Start Date
               </label>
-              <input
-                type="text"
-                placeholder="mm/dd/yyyy"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !startDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {startDate ? startDate.toLocaleDateString() : "mm/dd/yyyy"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={startDate}
+                    onSelect={setStartDate}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Planned End Date
               </label>
-              <input
-                type="text"
-                placeholder="mm/dd/yyyy"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !endDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {endDate ? endDate.toLocaleDateString() : "mm/dd/yyyy"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={endDate}
+                    onSelect={setEndDate}
+                    initialFocus
+                    disabled={startDate ? { before: startDate } : undefined}
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
           </div>
         </div>
@@ -124,9 +195,14 @@ export default function AddActivityDialog({ isOpen, onClose }: AddActivityDialog
         {/* Footer */}
         <DialogFooter className="mt-6">
           <DialogClose asChild>
-            <Button variant="outline">Cancel</Button>
+            <Button variant="outline" onClick={handleCancel}>
+              Cancel
+            </Button>
           </DialogClose>
-          <Button className="bg-blue-600 text-white hover:bg-blue-700">
+          <Button 
+            className="bg-blue-600 text-white hover:bg-blue-700"
+            onClick={handleAddActivity}
+          >
             Add Activity
           </Button>
         </DialogFooter>

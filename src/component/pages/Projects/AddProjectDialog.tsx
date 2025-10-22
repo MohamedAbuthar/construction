@@ -10,7 +10,12 @@ import {
   DialogFooter,
 } from '@/component/ui/dialog';
 import { Button } from '@/component/ui/button';
+import { Calendar } from '@/component/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/component/ui/popover';
+import { CalendarIcon } from 'lucide-react';
+import { format } from 'date-fns';
 import { useState } from 'react';
+import { cn } from '@/lib/utils';
 
 interface AddProjectDialogProps {
   isOpen: boolean;
@@ -21,8 +26,8 @@ export default function AddProjectDialog({ isOpen, onClose }: AddProjectDialogPr
   const [projectName, setProjectName] = useState('');
   const [status, setStatus] = useState('Planned');
   const [projectValue, setProjectValue] = useState('');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  const [startDate, setStartDate] = useState<Date>();
+  const [endDate, setEndDate] = useState<Date>();
   const [latitude, setLatitude] = useState('');
   const [longitude, setLongitude] = useState('');
 
@@ -52,8 +57,8 @@ export default function AddProjectDialog({ isOpen, onClose }: AddProjectDialogPr
     setProjectName('');
     setStatus('Planned');
     setProjectValue('');
-    setStartDate('');
-    setEndDate('');
+    setStartDate(undefined);
+    setEndDate(undefined);
     setLatitude('');
     setLongitude('');
   };
@@ -114,29 +119,62 @@ export default function AddProjectDialog({ isOpen, onClose }: AddProjectDialogPr
             </div>
           </div>
 
-          {/* Planned Start and End Dates - Side by Side */}
+          {/* Planned Start and End Dates - Side by Side with Calendar */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Planned Start Date
               </label>
-              <input
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !startDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {startDate ? format(startDate, "PPP") : "mm/dd/yyyy"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={startDate}
+                    onSelect={setStartDate}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Planned End Date
               </label>
-              <input
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !endDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {endDate ? format(endDate, "PPP") : "mm/dd/yyyy"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={endDate}
+                    onSelect={setEndDate}
+                    initialFocus
+                    disabled={startDate ? { before: startDate } : undefined}
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
           </div>
 
