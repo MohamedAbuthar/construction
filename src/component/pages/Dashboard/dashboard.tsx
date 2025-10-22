@@ -147,7 +147,7 @@ export default function DashboardPage({ userRole = 'Admin' }: DashboardProps) {
                 <p className="text-gray-600 text-sm mt-1">Requests awaiting your approval</p>
               </div>
               <Link 
-                href="/approvals"
+                href="/approval"
                 className="flex items-center justify-center bg-white text-gray-800 border border-gray-300 px-3 sm:px-4 py-2 rounded-lg hover:bg-gray-50 font-medium text-sm transition-colors w-full sm:w-auto"
               >
                 Review All <ArrowRight size={16} className="ml-1" />
