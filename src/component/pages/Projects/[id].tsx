@@ -732,25 +732,28 @@ function ProjectViewContentInner() {
 
     {/* EVM Chart with Add Snapshot Button */}
     <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4 lg:p-6 relative">
-      {/* Add Snapshot Button - Responsive positioning */}
-      <div className="absolute top-3 right-3 sm:top-4 sm:right-4 lg:top-6 lg:right-6 z-10">
-        <button 
-          onClick={() => setIsSnapshotDialogOpen(true)}
-          className="flex items-center space-x-1 sm:space-x-2 bg-blue-600 text-white px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 rounded-md sm:rounded-lg hover:bg-blue-700 transition-colors shadow-sm sm:shadow-md text-sm sm:text-base"
-        >
-          <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
-          <span>Add Snapshot</span>
-        </button>
-      </div>
+      {/* Header Section with Title and Button */}
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-3 sm:mb-4 lg:mb-6 gap-3 sm:gap-0">
+        {/* EVM Trend Header - Left Side */}
+        <div className="flex-1">
+          <h2 className="text-base sm:text-lg lg:text-xl font-bold text-gray-800 mb-1 sm:mb-2">EVM Trend</h2>
+          <p className="text-gray-600 text-sm sm:text-base">Planned Value vs Earned Value vs Actual Cost</p>
+        </div>
 
-      {/* EVM Trend Header */}
-      <div className="mb-3 sm:mb-4 lg:mb-6 pr-16 sm:pr-20 lg:pr-24">
-        <h2 className="text-base sm:text-lg lg:text-xl font-bold text-gray-800 mb-1 sm:mb-2">EVM Trend</h2>
-        <p className="text-gray-600 text-sm sm:text-base">Planned Value vs Earned Value vs Actual Cost</p>
+        {/* Add Snapshot Button - Right Side */}
+        <div className="sm:self-start">
+          <button 
+            onClick={() => setIsSnapshotDialogOpen(true)}
+            className="flex items-center space-x-1 sm:space-x-2 bg-blue-600 text-white px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 rounded-md sm:rounded-lg hover:bg-blue-700 transition-colors shadow-sm sm:shadow-md text-sm sm:text-base whitespace-nowrap"
+          >
+            <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
+            <span>Add Snapshot</span>
+          </button>
+        </div>
       </div>
 
       {/* EVM Chart - Responsive height */}
-      <div className="h-48 xs:h-56 sm:h-64 md:h-72 lg:h-80 xl:h-96 mt-3 sm:mt-4">
+      <div className="h-48 xs:h-56 sm:h-64 md:h-72 lg:h-80 xl:h-96">
         <EVMChart />
       </div>
 
@@ -805,6 +808,7 @@ function ProjectViewContentInner() {
     </div>
   </div>
 )}
+
           
         </div>
       </div>
