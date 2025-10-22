@@ -1,16 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Search, Plus, Calendar, Building, Package, Truck, CheckCircle, Download, FileText } from 'lucide-react';
-import { Button } from '@/component/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from '@/component/ui/dialog';
+import { Search, Plus, Calendar, Building, Package, Truck, CheckCircle, Download, FileText, X } from 'lucide-react';
 
 interface ProcurementStats {
   totalProducts: number;
@@ -245,7 +236,7 @@ export default function Procurement() {
     quantity: 0,
     unit: 'Ton',
     unitPrice: 0,
-    poDate: new Date().toLocaleDateString('en-US'),
+    poDate: '',
     expectedDelivery: '',
     status: 'PO Released'
   });
@@ -271,26 +262,26 @@ export default function Procurement() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'Received':
-        return 'bg-white-100 text-gray-900 border-gray-200';
+        return 'bg-white-50 text-gray-700 border-gray-200';
       case 'In Transit':
-        return 'bg-white-100 text-gray-900 border-gray-200';
+        return 'bg-white-50 text-gray-700 border-gray-200';
       case 'In Production':
-        return 'bg-white-100 text-gray-900 border-gray-200';
+        return 'bg-white-50 text-gray-700 border-gray-200';
       default:
-        return 'bg-white-100 text-gray-900 border-gray-200';
+        return 'bg-gray-50 text-gray-700 border-gray-200';
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'Received':
-        return <CheckCircle className="text-green-600" size={20} />;
+        return <CheckCircle className="text-green-600" size={16} />;
       case 'In Transit':
-        return <Truck className="text-blue-600" size={20} />;
+        return <Truck className="text-blue-600" size={16} />;
       case 'In Production':
-        return <Package className="text-yellow-600" size={20} />;
+        return <Package className="text-yellow-600" size={16} />;
       default:
-        return <Package className="text-gray-600" size={20} />;
+        return <Package className="text-gray-600" size={16} />;
     }
   };
 
@@ -387,7 +378,7 @@ export default function Procurement() {
       quantity: 0,
       unit: 'Ton',
       unitPrice: 0,
-      poDate: new Date().toLocaleDateString('en-US'),
+      poDate: '',
       expectedDelivery: '',
       status: 'PO Released'
     });
@@ -401,316 +392,391 @@ export default function Procurement() {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-foreground">Procurement</h1>
-        <p className="text-muted-foreground mt-1">Manage products and purchase orders</p>
-      </div>
-
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="p-6 bg-white rounded-lg border border-gray-200 shadow-sm">
-          <h3 className="text-sm font-medium text-gray-600 mb-2">Products</h3>
-          <p className="text-3xl font-bold text-gray-900">{stats.totalProducts}</p>
-        </div>
-        <div className="p-6 bg-white rounded-lg border border-gray-200 shadow-sm">
-          <h3 className="text-sm font-medium text-gray-600 mb-2">Purchase Orders</h3>
-          <p className="text-3xl font-bold text-gray-900">{stats.totalPurchaseOrders}</p>
-          <p className="text-xs text-gray-500 mt-1">1 received</p>
-        </div>
-        <div className="p-6 bg-white rounded-lg border border-gray-200 shadow-sm">
-          <h3 className="text-sm font-medium text-gray-600 mb-2">Total PO Value</h3>
-          <p className="text-2xl font-bold text-gray-900">{formatCurrency(stats.totalPOValue)}</p>
-        </div>
-        <div className="p-6 bg-white rounded-lg border border-gray-200 shadow-sm">
-          <h3 className="text-sm font-medium text-gray-600 mb-2">In Transit</h3>
-          <p className="text-3xl font-bold text-gray-900">{stats.inTransit}</p>
-        </div>
-      </div>
-
-      {/* Tabs Container */}
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
-        {/* Tab Headers */}
-        <div className="border-b border-gray-200 bg-gray-50/50 p-2">
-          <nav className="flex space-x-2 overflow-x-auto">
-            <button
-              onClick={() => setActiveTab('products')}
-              className={`py-2 px-4 font-medium text-sm transition-all duration-200 ease-in-out whitespace-nowrap rounded-lg border ${
-                activeTab === 'products'
-                  ? 'text-black-600 bg-white border-gray-200 shadow-sm'
-                  : 'text-gray-400 bg-white/50 border-gray-200 backdrop-blur-xs hover:bg-white/70 hover:text-gray-900'
-              }`}
-            >
-              Products
-            </button>
-            <button
-              onClick={() => setActiveTab('orders')}
-              className={`py-2 px-4 font-medium text-sm transition-all duration-200 ease-in-out whitespace-nowrap rounded-lg border ${
-                activeTab === 'orders'
-                  ? 'text-black-600 bg-white border-gray-200 shadow-sm'
-                  : 'text-gray-400 bg-white/50 border-gray-200 backdrop-blur-xs hover:bg-white/70 hover:text-gray-900'
-              }`}
-            >
-              Purchase Orders
-            </button>
-          </nav>
+    <div className="min-h-screen bg-gray-50">
+      <div className="space-y-4 sm:space-y-6 p-3 sm:p-4 md:p-6 max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="pt-2">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">Procurement</h1>
+          <p className="text-gray-600 mt-1 text-xs sm:text-sm">Manage products and purchase orders</p>
         </div>
 
-        {/* Tab Content */}
-        <div className="p-6">
-          {/* Products Tab Content */}
-          {activeTab === 'products' && (
-            <div className="space-y-6">
-              <div className="flex justify-between items-center">
-                <div>
-                  <h2 className="text-2xl font-semibold text-gray-900">Product Catalog</h2>
-                  <p className="text-sm text-gray-600">Master list of construction materials</p>
+        {/* Stats Cards */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4">
+          <div className="p-3 sm:p-4 md:p-5 bg-white rounded-lg border border-gray-200 shadow-sm">
+            <h3 className="text-xs sm:text-sm font-medium text-gray-600 mb-1 sm:mb-2">Products</h3>
+            <p className="text-lg sm:text-2xl md:text-3xl font-bold text-gray-900">{stats.totalProducts}</p>
+          </div>
+          <div className="p-3 sm:p-4 md:p-5 bg-white rounded-lg border border-gray-200 shadow-sm">
+            <h3 className="text-xs sm:text-sm font-medium text-gray-600 mb-1 sm:mb-2">Purchase Orders</h3>
+            <p className="text-lg sm:text-2xl md:text-3xl font-bold text-gray-900">{stats.totalPurchaseOrders}</p>
+            <p className="text-xs text-gray-500 mt-1">1 received</p>
+          </div>
+          <div className="p-3 sm:p-4 md:p-5 bg-white rounded-lg border border-gray-200 shadow-sm">
+            <h3 className="text-xs sm:text-sm font-medium text-gray-600 mb-1 sm:mb-2">Total PO Value</h3>
+            <p className="text-sm sm:text-xl md:text-2xl font-bold text-gray-900">{formatCurrency(stats.totalPOValue)}</p>
+          </div>
+          <div className="p-3 sm:p-4 md:p-5 bg-white rounded-lg border border-gray-200 shadow-sm">
+            <h3 className="text-xs sm:text-sm font-medium text-gray-600 mb-1 sm:mb-2">In Transit</h3>
+            <p className="text-lg sm:text-2xl md:text-3xl font-bold text-gray-900">{stats.inTransit}</p>
+          </div>
+        </div>
+
+        {/* Tabs Container */}
+        <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+          {/* Tab Headers */}
+          <div className="border-b border-gray-200 bg-gray-50 p-2">
+            <nav className="flex space-x-2">
+              <button
+                onClick={() => setActiveTab('products')}
+                className={`flex-1 sm:flex-none py-2 px-3 sm:px-6 font-medium text-xs sm:text-sm transition-all rounded-lg ${
+                  activeTab === 'products'
+                    ? 'text-blue-600 bg-white border border-gray-200 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                Products
+              </button>
+              <button
+                onClick={() => setActiveTab('orders')}
+                className={`flex-1 sm:flex-none py-2 px-3 sm:px-6 font-medium text-xs sm:text-sm transition-all rounded-lg ${
+                  activeTab === 'orders'
+                    ? 'text-blue-600 bg-white border border-gray-200 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                Purchase Orders
+              </button>
+            </nav>
+          </div>
+
+          {/* Tab Content */}
+          <div className="p-3 sm:p-4 md:p-6">
+            {/* Products Tab */}
+            {activeTab === 'products' && (
+              <div className="space-y-4">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                  <div>
+                    <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900">Product Catalog</h2>
+                    <p className="text-xs sm:text-sm text-gray-600">Master list of construction materials</p>
+                  </div>
+                  <button
+                    onClick={() => setIsProductDialogOpen(true)}
+                    className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                  >
+                    <Plus size={16} />
+                    Add Product
+                  </button>
                 </div>
-                <Button
-                  onClick={() => setIsProductDialogOpen(true)}
-                  className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
-                >
-                  <Plus size={18} />
-                  Add Product
-                </Button>
-              </div>
 
-              {/* Search for Products */}
-              <div className="relative">
-                <Search className="absolute left-3 top-3 text-gray-400" size={18} />
-                <input
-                  type="text"
-                  placeholder="Search products..."
-                  value={productSearchTerm}
-                  onChange={(e) => setProductSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-0 text-gray-900 bg-gray-50"
-                />
-              </div>
+                {/* Search */}
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+                  <input
+                    type="text"
+                    placeholder="Search products..."
+                    value={productSearchTerm}
+                    onChange={(e) => setProductSearchTerm(e.target.value)}
+                    className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                  />
+                </div>
 
-              {/* Products Table */}
-              <div className="overflow-x-auto border border-gray-200 rounded-lg">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b-2 border-gray-300 bg-white-50">
-                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500">Product Name</th>
-                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500">Category</th>
-                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500">Unit</th>
-                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500">Description</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredProducts.map((product) => (
-                      <tr key={product.id} className="border-b border-gray-200 hover:bg-gray-50 transition">
-                        <td className="px-6 py-4 text-sm font-medium text-gray-900">{product.name}</td>
-                        <td className="px-6 py-4 text-sm text-gray-800">{product.category}</td>
-                        <td className="px-6 py-4 text-xs text-gray-700">{product.unit}</td>
-                        <td className="px-6 py-4 text-sm text-gray-600">{product.description}</td>
+                {/* Products Table - Desktop */}
+                <div className="hidden md:block overflow-x-auto border border-gray-200 rounded-lg">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-gray-200 bg-gray-50">
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600">Product Name</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600">Category</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600">Unit</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600">Description</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-
-          {/* Purchase Orders Tab Content */}
-          {activeTab === 'orders' && (
-            <div className="space-y-6">
-              <div className="flex justify-between items-center">
-                <div>
-                  <h2 className="text-2xl font-semibold text-gray-900">Purchase Orders</h2>
-                  <p className="text-sm text-gray-600">Track material orders and deliveries</p>
+                    </thead>
+                    <tbody>
+                      {filteredProducts.map((product) => (
+                        <tr key={product.id} className="border-b border-gray-100 hover:bg-gray-50">
+                          <td className="px-4 py-3 text-sm font-medium text-gray-900">{product.name}</td>
+                          <td className="px-4 py-3 text-sm text-gray-700">{product.category}</td>
+                          <td className="px-4 py-3 text-sm text-gray-700">{product.unit}</td>
+                          <td className="px-4 py-3 text-sm text-gray-600">{product.description}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
-                <Button 
-                  onClick={() => setIsPODialogOpen(true)}
-                  className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
-                >
-                  <Plus size={18} />
-                  New PO
-                </Button>
-              </div>
 
-              {/* Search for Orders */}
-              <div className="relative">
-                <Search className="absolute left-3 top-3 text-gray-400" size={18} />
-                <input
-                  type="text"
-                  placeholder="Search purchase orders..."
-                  value={orderSearchTerm}
-                  onChange={(e) => setOrderSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-0 text-gray-900 bg-gray-50"
-                />
+                {/* Products Cards - Mobile */}
+                <div className="md:hidden space-y-3">
+                  {filteredProducts.map((product) => (
+                    <div key={product.id} className="bg-white border border-gray-200 rounded-lg p-4 space-y-2">
+                      <div className="flex justify-between items-start">
+                        <h3 className="font-semibold text-gray-900 text-sm">{product.name}</h3>
+                        <span className="text-xs bg-gray-100 px-2 py-1 rounded">{product.unit}</span>
+                      </div>
+                      <p className="text-xs text-gray-600">{product.category}</p>
+                      <p className="text-xs text-gray-500">{product.description}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
+            )}
 
-              {/* Purchase Orders Table */}
-              <div className="overflow-x-auto border border-gray-200 rounded-lg">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b-2 border-gray-300 bg-white-50 hover:bg-gray-50">
-                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500">Project</th>
-                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500">Product</th>
-                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500">Quantity</th>
-                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500">Unit Price</th>
-                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500">Total</th>
-                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500">Status</th>
-                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500">Delivery</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredOrders.map((order) => (
-                      <tr 
-                        key={order.id} 
-                        className="border-b border-gray-200 hover:bg-blue-300 transition cursor-pointer"
-                        onClick={() => handlePOClick(order)}
-                      >
-                        <td className="px-6 py-4">
-                          <div className="text-sm font-semibold text-gray-900">{order.project}</div>
-                          <div className="text-xs text-gray-600">{order.milestone}</div>
-                        </td>
-                        <td className="px-6 py-4 text-sm font-semibold text-gray-900">{order.product}</td>
-                        <td className="px-6 py-4 text-sm text-gray-700">
-                          {order.quantity} {order.unit}
-                        </td>
-                        <td className="px-6 py-4 text-sm text-gray-700">{formatCurrency(order.unitPrice)}</td>
-                        <td className="px-6 py-4 text-sm font-semibold text-gray-900">{formatCurrency(order.total)}</td>
-                        <td className="px-6 py-4">
-                          <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold border ${getStatusColor(order.status)}`}>
-                            {order.status}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-3">
-                            <div className="flex-1">
-                              <div className="w-16 h-2 bg-gray-200 rounded-full overflow-hidden">
-                                <div
-                                  className="h-full bg-blue-500 rounded-full"
-                                  style={{ width: `${order.progress}%` }}
-                                />
+            {/* Purchase Orders Tab */}
+            {activeTab === 'orders' && (
+              <div className="space-y-4">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                  <div>
+                    <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900">Purchase Orders</h2>
+                    <p className="text-xs sm:text-sm text-gray-600">Track material orders and deliveries</p>
+                  </div>
+                  <button 
+                    onClick={() => setIsPODialogOpen(true)}
+                    className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                  >
+                    <Plus size={16} />
+                    New PO
+                  </button>
+                </div>
+
+                {/* Search */}
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+                  <input
+                    type="text"
+                    placeholder="Search purchase orders..."
+                    value={orderSearchTerm}
+                    onChange={(e) => setOrderSearchTerm(e.target.value)}
+                    className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                  />
+                </div>
+
+                {/* PO Table - Desktop */}
+                <div className="hidden lg:block overflow-x-auto border border-gray-200 rounded-lg">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-gray-200 bg-gray-50">
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600">Project</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600">Product</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600">Quantity</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600">Unit Price</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600">Total</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600">Status</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600">Delivery</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredOrders.map((order) => (
+                        <tr 
+                          key={order.id} 
+                          className="border-b border-gray-100 hover:bg-blue-50 cursor-pointer transition"
+                          onClick={() => handlePOClick(order)}
+                        >
+                          <td className="px-4 py-3">
+                            <div className="text-sm font-medium text-gray-900">{order.project}</div>
+                            <div className="text-xs text-gray-500">{order.milestone}</div>
+                          </td>
+                          <td className="px-4 py-3 text-sm text-gray-900">{order.product}</td>
+                          <td className="px-4 py-3 text-sm text-gray-700">{order.quantity} {order.unit}</td>
+                          <td className="px-4 py-3 text-sm text-gray-700">{formatCurrency(order.unitPrice)}</td>
+                          <td className="px-4 py-3 text-sm font-semibold text-gray-900">{formatCurrency(order.total)}</td>
+                          <td className="px-4 py-3">
+                            <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(order.status)}`}>
+                              {getStatusIcon(order.status)}
+                              {order.status}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3">
+                            <div className="flex items-center gap-2">
+                              <div className="flex-1">
+                                <div className="w-16 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                  <div
+                                    className="h-full bg-blue-500"
+                                    style={{ width: `${order.progress}%` }}
+                                  />
+                                </div>
                               </div>
+                              <span className="text-xs text-gray-600">{order.progress}%</span>
                             </div>
-                            <span className="text-xs text-gray-600 whitespace-nowrap">{order.progress}%</span>
-                          </div>
-                          <div className="text-xs text-gray-600 mt-1 flex items-center gap-1">
-                            <Calendar size={12} className="text-gray-500" />
+                            <div className="text-xs text-gray-500 mt-1 flex items-center gap-1">
+                              <Calendar size={12} />
+                              {order.deliveryDate}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* PO Cards - Mobile & Tablet */}
+                <div className="lg:hidden space-y-3">
+                  {filteredOrders.map((order) => (
+                    <div 
+                      key={order.id} 
+                      className="bg-white border border-gray-200 rounded-lg p-4 space-y-3 active:bg-blue-50 cursor-pointer transition"
+                      onClick={() => handlePOClick(order)}
+                    >
+                      <div className="flex justify-between items-start gap-2">
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-gray-900 text-sm truncate">{order.project}</h3>
+                          <p className="text-xs text-gray-500">{order.milestone}</p>
+                        </div>
+                        <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium border whitespace-nowrap ${getStatusColor(order.status)}`}>
+                          {getStatusIcon(order.status)}
+                          <span className="hidden sm:inline">{order.status}</span>
+                        </span>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-2 text-xs">
+                        <div>
+                          <span className="text-gray-500">Product:</span>
+                          <p className="font-medium text-gray-900">{order.product}</p>
+                        </div>
+                        <div>
+                          <span className="text-gray-500">Quantity:</span>
+                          <p className="font-medium text-gray-900">{order.quantity} {order.unit}</p>
+                        </div>
+                        <div>
+                          <span className="text-gray-500">Unit Price:</span>
+                          <p className="font-medium text-gray-900">{formatCurrency(order.unitPrice)}</p>
+                        </div>
+                        <div>
+                          <span className="text-gray-500">Total:</span>
+                          <p className="font-semibold text-gray-900">{formatCurrency(order.total)}</p>
+                        </div>
+                      </div>
+
+                      <div className="pt-2 border-t border-gray-100">
+                        <div className="flex items-center justify-between text-xs">
+                          <div className="flex items-center gap-1 text-gray-500">
+                            <Calendar size={12} />
                             {order.deliveryDate}
                           </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                          <div className="flex items-center gap-2">
+                            <div className="w-20 h-2 bg-gray-200 rounded-full overflow-hidden">
+                              <div
+                                className="h-full bg-blue-500"
+                                style={{ width: `${order.progress}%` }}
+                              />
+                            </div>
+                            <span className="text-gray-600 font-medium">{order.progress}%</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
 
       {/* Add Product Dialog */}
-      <Dialog open={isProductDialogOpen} onOpenChange={setIsProductDialogOpen}>
-        <DialogContent className="bg-white max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-gray-900">Add Product</DialogTitle>
-            <DialogDescription className="text-gray-600">
-              Create a new product in the catalog
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="space-y-4 py-4">
-            {/* Product Name */}
-            <div>
-              <label className="block text-sm font-medium text-gray-900 mb-2">
-                Product Name <span className="text-gray-700">*</span>
-              </label>
-              <input
-                type="text"
-                name="name"
-                placeholder="Enter product name"
-                value={productFormData.name}
-                onChange={handleProductInputChange}
-                className="w-full px-3 py-2 bg-gray-100 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-0 text-gray-900 transition-colors"
-              />
+      {isProductDialogOpen && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white border-b border-gray-200 p-4 sm:p-6">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Add Product</h2>
+                  <p className="text-xs sm:text-sm text-gray-600 mt-1">Create a new product in the catalog</p>
+                </div>
+                <button onClick={() => setIsProductDialogOpen(false)} className="text-gray-400 hover:text-gray-600">
+                  <X size={20} />
+                </button>
+              </div>
             </div>
 
-            {/* Category and Unit Row */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="p-4 sm:p-6 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-900 mb-2">
-                  Category
+                  Product Name <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
-                  name="category"
-                  placeholder="e.g., Cement, Steel"
-                  value={productFormData.category}
+                  name="name"
+                  placeholder="Enter product name"
+                  value={productFormData.name}
                   onChange={handleProductInputChange}
-                  className="w-full px-3 py-2 bg-gray-100 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-0 text-gray-900 transition-colors"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                 />
               </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-sm font-medium text-gray-900 mb-2">Category</label>
+                  <input
+                    type="text"
+                    name="category"
+                    placeholder="e.g., Cement"
+                    value={productFormData.category}
+                    onChange={handleProductInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-900 mb-2">Unit</label>
+                  <select
+                    name="unit"
+                    value={productFormData.unit}
+                    onChange={handleProductInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                  >
+                    {UNIT_OPTIONS.map(unit => (
+                      <option key={unit} value={unit}>{unit}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
               <div>
-                <label className="block text-sm font-medium text-gray-900 mb-2">
-                  Unit
-                </label>
-                <select
-                  name="unit"
-                  value={productFormData.unit}
+                <label className="block text-sm font-medium text-gray-900 mb-2">Description</label>
+                <textarea
+                  name="description"
+                  placeholder="Enter product description"
+                  value={productFormData.description}
                   onChange={handleProductInputChange}
-                  className="w-full px-3 py-2 bg-gray-100 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-0 text-gray-900 bg-white transition-colors"
-                >
-                  {UNIT_OPTIONS.map(unit => (
-                    <option key={unit} value={unit}>{unit}</option>
-                  ))}
-                </select>
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none text-sm"
+                />
               </div>
             </div>
 
-            {/* Description */}
-            <div>
-              <label className="block text-sm font-medium text-gray-900 mb-2">
-                Description
-              </label>
-              <textarea
-                name="description"
-                placeholder="Enter product description"
-                value={productFormData.description}
-                onChange={handleProductInputChange}
-                rows={4}
-                className="h-12 w-full px-3 py-2 bg-gray-100 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-0 text-gray-900 resize-none transition-colors"
-              />
+            <div className="sticky bottom-0 bg-gray-50 border-t border-gray-200 p-4 sm:p-6 flex flex-col-reverse sm:flex-row gap-2 sm:gap-3">
+              <button
+                onClick={() => setIsProductDialogOpen(false)}
+                className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 font-medium text-sm transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleAddProduct}
+                className="w-full sm:w-auto px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-sm transition-colors"
+              >
+                Add Product
+              </button>
             </div>
           </div>
-
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setIsProductDialogOpen(false)}
-              className='bg-gray-100 hover:bg-blue-600 text-gray-900 hover:text-white'
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleAddProduct}
-              className="bg-blue-600 hover:bg-blue-700"
-            >
-              Add Product
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        </div>
+      )}
 
       {/* Create Purchase Order Dialog */}
-      <Dialog open={isPODialogOpen} onOpenChange={setIsPODialogOpen}>
-        <DialogContent className="bg-white max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-gray-900">Create Purchase Order</DialogTitle>
-            <DialogDescription className="text-gray-600">
-              Create a new purchase order for materials
-            </DialogDescription>
-          </DialogHeader>
+      {isPODialogOpen && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white border-b border-gray-200 p-4 sm:p-6">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Create Purchase Order</h2>
+                  <p className="text-xs sm:text-sm text-gray-600 mt-1">Create a new purchase order for materials</p>
+                </div>
+                <button onClick={() => setIsPODialogOpen(false)} className="text-gray-400 hover:text-gray-600">
+                  <X size={20} />
+                </button>
+              </div>
+            </div>
 
-          <div className="space-y-6 py-4">
-            {/* Project and Milestone Row */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="p-4 sm:p-6 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-900 mb-2">
                   Project <span className="text-red-500">*</span>
@@ -719,7 +785,7 @@ export default function Procurement() {
                   name="project"
                   value={poFormData.project}
                   onChange={handlePOInputChange}
-                  className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-0 text-gray-900 bg-white transition-colors"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                 >
                   <option value="">Select project</option>
                   {PROJECT_OPTIONS.map(project => (
@@ -727,15 +793,80 @@ export default function Procurement() {
                   ))}
                 </select>
               </div>
+
               <div>
                 <label className="block text-sm font-medium text-gray-900 mb-2">
-                  Milestone <span className="text-red-500">*</span>
+                  Product <span className="text-red-500">*</span>
                 </label>
+                <select
+                  name="product"
+                  value={poFormData.product}
+                  onChange={handlePOInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                >
+                  <option value="">Select product</option>
+                  {products.map(product => (
+                    <option key={product.id} value={product.name}>{product.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-900 mb-2">Quantity</label>
+                <input
+                  type="number"
+                  name="quantity"
+                  placeholder="0"
+                  value={poFormData.quantity || ''}
+                  onChange={handlePOInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-sm font-medium text-gray-900 mb-2">PO Date</label>
+                  <input
+                    type="date"
+                    name="poDate"
+                    value={poFormData.poDate}
+                    onChange={handlePOInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-900 mb-2">Expected Delivery</label>
+                  <input
+                    type="date"
+                    name="expectedDelivery"
+                    value={poFormData.expectedDelivery}
+                    onChange={handlePOInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-900 mb-2">Status</label>
+                <select
+                  name="status"
+                  value={poFormData.status}
+                  onChange={handlePOInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                >
+                  <option value="PO Released">PO Released</option>
+                  <option value="Draft">Draft</option>
+                  <option value="Pending Approval">Pending Approval</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-900 mb-2">Milestone</label>
                 <select
                   name="milestone"
                   value={poFormData.milestone}
                   onChange={handlePOInputChange}
-                  className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-0 text-gray-900 bg-white transition-colors"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                 >
                   <option value="Structural Framework">Structural Framework</option>
                   <option value="Tower Construction">Tower Construction</option>
@@ -743,269 +874,173 @@ export default function Procurement() {
                   <option value="MEP Installation">MEP Installation</option>
                 </select>
               </div>
-            </div>
 
-            {/* Product */}
-            <div>
-              <label className="block text-sm font-medium text-gray-900 mb-2">
-                Product <span className="text-red-500">*</span>
-              </label>
-              <select
-                name="product"
-                value={poFormData.product}
-                onChange={handlePOInputChange}
-                className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-0 text-gray-900 bg-white transition-colors"
-              >
-                <option value="">Select product</option>
-                {products.map(product => (
-                  <option key={product.id} value={product.name}>{product.name}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Quantity, UOM, Unit Price Row */}
-            <div>
-              <label className="block text-sm font-medium text-gray-900 mb-2">
-                Quantity & Pricing
-              </label>
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <input
-                    type="number"
-                    name="quantity"
-                    placeholder="0"
-                    value={poFormData.quantity}
-                    onChange={handlePOInputChange}
-                    className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-0 text-gray-900 transition-colors"
-                  />
-                  <div className="text-xs text-gray-500 mt-1">Quantity</div>
-                </div>
-                <div>
+                  <label className="block text-sm font-medium text-gray-900 mb-2">UOM</label>
                   <select
                     name="unit"
                     value={poFormData.unit}
                     onChange={handlePOInputChange}
-                    className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-0 text-gray-900 bg-white transition-colors"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                   >
                     {UNIT_OPTIONS.map(unit => (
                       <option key={unit} value={unit}>{unit}</option>
                     ))}
                   </select>
-                  <div className="text-xs text-gray-500 mt-1">UOM</div>
                 </div>
                 <div>
+                  <label className="block text-sm font-medium text-gray-900 mb-2">Unit Price</label>
                   <input
                     type="number"
                     name="unitPrice"
                     placeholder="0.00"
-                    value={poFormData.unitPrice}
+                    value={poFormData.unitPrice || ''}
                     onChange={handlePOInputChange}
-                    step="0.01"
-                    className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-0 text-gray-900 transition-colors"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                   />
-                  <div className="text-xs text-gray-500 mt-1">Unit Price</div>
                 </div>
               </div>
             </div>
 
-            {/* PO Date and Expected Delivery Row */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-900 mb-2">
-                  PO Date
-                </label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    name="poDate"
-                    value={poFormData.poDate}
-                    onChange={handlePOInputChange}
-                    className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-0 text-gray-900 transition-colors"
-                  />
-                  <Calendar className="absolute right-3 top-3 text-gray-400 pointer-events-none" size={18} />
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-900 mb-2">
-                  Expected Delivery
-                </label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    name="expectedDelivery"
-                    placeholder="mm/dd/yyyy"
-                    value={poFormData.expectedDelivery}
-                    onChange={handlePOInputChange}
-                    className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-0 text-gray-900 transition-colors"
-                  />
-                  <Calendar className="absolute right-3 top-3 text-gray-400 pointer-events-none" size={18} />
-                </div>
-              </div>
-            </div>
-
-            {/* Status */}
-            <div>
-              <label className="block text-sm font-medium text-gray-900 mb-2">
-                Status
-              </label>
-              <select
-                name="status"
-                value={poFormData.status}
-                onChange={handlePOInputChange}
-                className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-0 text-gray-900 bg-white transition-colors"
+            <div className="sticky bottom-0 bg-gray-50 border-t border-gray-200 p-4 sm:p-6 flex flex-col-reverse sm:flex-row gap-2 sm:gap-3">
+              <button
+                onClick={() => setIsPODialogOpen(false)}
+                className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 font-medium text-sm transition-colors"
               >
-                <option value="PO Released">PO Released</option>
-                <option value="Draft">Draft</option>
-                <option value="Pending Approval">Pending Approval</option>
-              </select>
+                Cancel
+              </button>
+              <button
+                onClick={handleCreatePO}
+                className="w-full sm:w-auto px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-sm transition-colors"
+              >
+                Create PO
+              </button>
             </div>
           </div>
-
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setIsPODialogOpen(false)}
-              className="bg-white hover:bg-gray-100 text-gray-900 border-gray-300"
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleCreatePO}
-              className="bg-blue-600 hover:bg-blue-700"
-            >
-              Create PO
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        </div>
+      )}
 
       {/* Purchase Order Details Dialog */}
-      <Dialog open={isPODetailsDialogOpen} onOpenChange={setIsPODetailsDialogOpen}>
-        <DialogContent className="bg-white max-w-3xl">
-          <DialogHeader>
-            <DialogTitle className="text-gray-900 text-lg font-semibold">
-              Purchase Order Details
-            </DialogTitle>
-            <DialogDescription className="text-gray-500 text-sm">
-              View PO information and delivery history
-            </DialogDescription>
-          </DialogHeader>
-
-          {selectedPO && (
-            <div className="space-y-4 py-2">
-              {/* Two Column Layout */}
-              <div className="grid grid-cols-2 gap-x-16 gap-y-4">
-                {/* Left Column */}
-                <div className="space-y-4">
-                  <div>
-                    <h3 className="text-xs font-medium text-gray-500 mb-1">Project</h3>
-                    <p className="text-sm text-gray-900">{selectedPO.project}</p>
-                  </div>
-
-                  <div>
-                    <h3 className="text-xs font-medium text-gray-500 mb-1">Product</h3>
-                    <p className="text-sm text-gray-900">{selectedPO.product}</p>
-                  </div>
-
-                  <div>
-                    <h3 className="text-xs font-medium text-gray-500 mb-1">Quantity</h3>
-                    <p className="text-sm text-gray-900">
-                      {selectedPO.quantity} {selectedPO.unit}
-                    </p>
-                  </div>
-
-                  <div>
-                    <h3 className="text-xs font-medium text-gray-500 mb-1">Total Value</h3>
-                    <p className="text-sm text-gray-900">
-                      {formatCurrency(selectedPO.total)}
-                    </p>
-                  </div>
+      {isPODetailsDialogOpen && selectedPO && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white border-b border-gray-200 p-4 sm:p-6">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Purchase Order Details</h2>
+                  <p className="text-xs sm:text-sm text-gray-600 mt-1">{selectedPO.poNumber}</p>
                 </div>
+                <button onClick={() => setIsPODetailsDialogOpen(false)} className="text-gray-400 hover:text-gray-600">
+                  <X size={20} />
+                </button>
+              </div>
+            </div>
 
-                {/* Right Column */}
-                <div className="space-y-4">
-                  <div>
-                    <h3 className="text-xs font-medium text-gray-500 mb-1">Milestone</h3>
-                    <p className="text-sm text-gray-900">{selectedPO.milestone}</p>
-                  </div>
-
-                  <div>
-                    <h3 className="text-xs font-medium text-gray-500 mb-1">Status</h3>
-                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
-                      {selectedPO.status}
-                    </span>
-                  </div>
-
-                  <div>
-                    <h3 className="text-xs font-medium text-gray-500 mb-1">Unit Price</h3>
-                    <p className="text-sm text-gray-900">
-                      {formatCurrency(selectedPO.unitPrice)}
-                    </p>
-                  </div>
-
-                  <div>
-                    <h3 className="text-xs font-medium text-gray-500 mb-1">Expected Delivery</h3>
-                    <p className="text-sm text-gray-900">
-                      {selectedPO.estimatedDelivery}
-                    </p>
-                  </div>
+            <div className="p-4 sm:p-6 space-y-6">
+              {/* Two Column Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <h3 className="text-xs font-medium text-gray-500 mb-1">Project</h3>
+                  <p className="text-sm text-gray-900">{selectedPO.project}</p>
+                </div>
+                <div>
+                  <h3 className="text-xs font-medium text-gray-500 mb-1">Milestone</h3>
+                  <p className="text-sm text-gray-900">{selectedPO.milestone}</p>
+                </div>
+                <div>
+                  <h3 className="text-xs font-medium text-gray-500 mb-1">Product</h3>
+                  <p className="text-sm text-gray-900">{selectedPO.product}</p>
+                </div>
+                <div>
+                  <h3 className="text-xs font-medium text-gray-500 mb-1">Status</h3>
+                  <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(selectedPO.status)}`}>
+                    {getStatusIcon(selectedPO.status)}
+                    {selectedPO.status}
+                  </span>
+                </div>
+                <div>
+                  <h3 className="text-xs font-medium text-gray-500 mb-1">Quantity</h3>
+                  <p className="text-sm text-gray-900">{selectedPO.quantity} {selectedPO.unit}</p>
+                </div>
+                <div>
+                  <h3 className="text-xs font-medium text-gray-500 mb-1">Unit Price</h3>
+                  <p className="text-sm text-gray-900">{formatCurrency(selectedPO.unitPrice)}</p>
+                </div>
+                <div>
+                  <h3 className="text-xs font-medium text-gray-500 mb-1">Total Value</h3>
+                  <p className="text-sm font-semibold text-gray-900">{formatCurrency(selectedPO.total)}</p>
+                </div>
+                <div>
+                  <h3 className="text-xs font-medium text-gray-500 mb-1">Expected Delivery</h3>
+                  <p className="text-sm text-gray-900">{selectedPO.estimatedDelivery}</p>
                 </div>
               </div>
 
-              {/* Delivery History Table */}
-              <div className="pt-2">
-                <h3 className="text-xs font-medium text-gray-500 mb-3">Delivery History</h3>
+              {/* Delivery History */}
+              <div>
+                <h3 className="text-sm font-semibold text-gray-900 mb-3">Delivery History</h3>
                 {selectedPO.deliveryHistory && selectedPO.deliveryHistory.length > 0 ? (
-                  <div className="border border-gray-200 rounded-md overflow-hidden">
-                    <table className="w-full text-sm">
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 border-b border-gray-200">
-                            Delivery Date
-                          </th>
-                          <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 border-b border-gray-200">
-                            Quantity
-                          </th>
-                          <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 border-b border-gray-200">
-                            GRN Reference
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className="bg-white">
-                        {selectedPO.deliveryHistory.map((delivery, index) => (
-                          <tr key={index} className="border-b border-gray-200 last:border-b-0">
-                            <td className="px-4 py-2 text-sm text-gray-900">
-                              {delivery.date}
-                            </td>
-                            <td className="px-4 py-2 text-sm text-gray-900">
-                              {delivery.quantity} {delivery.unit}
-                            </td>
-                            <td className="px-4 py-2 text-sm text-gray-900">
-                              {delivery.grnReference}
-                            </td>
+                  <div className="border border-gray-200 rounded-lg overflow-hidden">
+                    {/* Desktop Table */}
+                    <div className="hidden sm:block overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead className="bg-gray-50">
+                          <tr>
+                            <th className="px-4 py-2 text-left text-xs font-medium text-gray-600">Delivery Date</th>
+                            <th className="px-4 py-2 text-left text-xs font-medium text-gray-600">Quantity</th>
+                            <th className="px-4 py-2 text-left text-xs font-medium text-gray-600">GRN Reference</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody>
+                          {selectedPO.deliveryHistory.map((delivery, index) => (
+                            <tr key={index} className="border-t border-gray-200">
+                              <td className="px-4 py-2 text-sm text-gray-900">{delivery.date}</td>
+                              <td className="px-4 py-2 text-sm text-gray-900">{delivery.quantity} {delivery.unit}</td>
+                              <td className="px-4 py-2 text-sm text-gray-900">{delivery.grnReference}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+
+                    {/* Mobile Cards */}
+                    <div className="sm:hidden divide-y divide-gray-200">
+                      {selectedPO.deliveryHistory.map((delivery, index) => (
+                        <div key={index} className="p-3 space-y-2">
+                          <div className="flex justify-between">
+                            <span className="text-xs text-gray-500">Date:</span>
+                            <span className="text-sm font-medium text-gray-900">{delivery.date}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-xs text-gray-500">Quantity:</span>
+                            <span className="text-sm text-gray-900">{delivery.quantity} {delivery.unit}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-xs text-gray-500">GRN:</span>
+                            <span className="text-sm text-gray-900">{delivery.grnReference}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 ) : (
                   <p className="text-sm text-gray-500 italic">No delivery history available</p>
                 )}
               </div>
             </div>
-          )}
 
-          <DialogFooter className="mt-4">
-            {/* <Button
-              variant="outline"
-              onClick={() => setIsPODetailsDialogOpen(false)}
-              className="bg-white hover:bg-gray-50 text-gray-700 border-gray-300"
-            >
-              Close
-            </Button> */}
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            {/* <div className="sticky bottom-0 bg-gray-50 border-t border-gray-200 p-4 sm:p-6">
+              <button
+                onClick={() => setIsPODetailsDialogOpen(false)}
+                className="w-full sm:w-auto px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-sm transition-colors"
+              >
+                Close
+              </button>
+            </div> */}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
