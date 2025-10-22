@@ -2,9 +2,18 @@
 
 import React, { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
-import { Task } from '@/component/types';
 
-// Constants
+interface Task {
+  id: string;
+  name: string;
+  startDate: string;
+  endDate: string;
+  status: 'planned' | 'on-time' | 'delayed';
+  isParent?: boolean;
+  isExpanded?: boolean;
+  children?: Task[];
+}
+
 const MONTHS = [
   'Jun 2024', 'Jul 2024', 'Aug 2024', 'Sep 2024', 'Oct 2024', 
   'Nov 2024', 'Dec 2024', 'Jan 2025', 'Feb 2025', 'Mar 2025', 
@@ -54,7 +63,7 @@ const INITIAL_TASKS: Task[] = [
         endDate: 'May 2025',
         status: 'planned',
         isParent: true,
-        isExpanded: true,
+        isExpanded: false,
         children: [
           {
             id: '1-2-1',
@@ -99,7 +108,7 @@ const INITIAL_TASKS: Task[] = [
     endDate: 'Oct 2025',
     status: 'planned',
     isParent: true,
-    isExpanded: true,
+    isExpanded: false,
     children: [
       {
         id: '2-1',
@@ -166,53 +175,47 @@ export default function GanttChart() {
     return { left, width };
   };
 
-  const getRowBackground = (id: string): string => {
-    if (id === '1-2-2' || id === '2-1') {
-      return 'bg-blue-50';
-    }
-    return '';
-  };
-
   const renderTasks = (taskList: Task[], level = 0) => {
     return taskList.map(task => (
       <React.Fragment key={task.id}>
-        <tr className={`border-b border-gray-200 hover:bg-blue-50 ${getRowBackground(task.id)}`}>
-          <td className={`p-4 sticky left-0 ${getRowBackground(task.id) || 'bg-white'}`}>
-            <div style={{ paddingLeft: `${level * 20}px` }} className="flex items-center gap-2">
+        <tr className="border-b border-gray-200 hover:bg-blue-200 transition-colors">
+          <td className="px-4 py-3 bg-white hover:bg-blue-200 text-sm w-80">
+            <div style={{ paddingLeft: `${level * 24}px` }} className="flex items-center gap-2">
               {task.isParent && (
                 <button
                   onClick={() => toggleExpand(task.id)}
-                  className="p-0 hover:bg-gray-200 rounded"
+                  className="p-0 hover:bg-blue-200 rounded"
                 >
                   <ChevronDown
                     size={16}
-                    className={`transition-transform ${task.isExpanded ? 'rotate-0' : '-rotate-90'}`}
+                    className={`transition-transform text-gray-600 ${task.isExpanded ? 'rotate-0' : '-rotate-90'}`}
                   />
                 </button>
               )}
               {!task.isParent && <div className="w-4" />}
-              <span className={`text-sm font-medium ${
-                level === 0 ? 'text-gray-900 font-semibold' : 'text-gray-700'
+              <span className={`${
+                level === 0 ? 'text-gray-900 font-semibold' : 'text-gray-700 font-normal'
               }`}>
                 {task.name}
               </span>
             </div>
           </td>
           <td colSpan={MONTHS.length} className="p-0">
-            <div className={`relative h-12 ${getRowBackground(task.id) || 'bg-gray-50'}`}>
+            <div className="relative h-10 bg-white hover:bg-blue-50 transition-colors flex items-center">
               {getMonthIndex(task.startDate) !== -1 && (
                 <div
-                  className={`absolute h-8 top-2 rounded-sm shadow-sm ${
+                  className={`absolute h-5 rounded-sm shadow-sm ${
                     task.status === 'planned'
-                      ? 'bg-blue-400 border border-blue-500'
+                      ? 'bg-blue-500'
                       : task.status === 'on-time'
-                      ? 'bg-green-400 border border-green-500'
-                      : 'bg-red-500 border border-red-600'
+                      ? 'bg-green-500'
+                      : 'bg-red-500'
                   }`}
                   style={{
                     left: `${calculateBarPosition(task.startDate, task.endDate).left}%`,
                     width: `${calculateBarPosition(task.startDate, task.endDate).width}%`,
-                    minWidth: '20px'
+                    minWidth: '25px',
+                    marginLeft: '6px'
                   }}
                   title={`${task.name}: ${task.startDate} - ${task.endDate}`}
                 />
@@ -237,68 +240,73 @@ export default function GanttChart() {
       <div className="p-6 bg-white rounded-lg shadow-lg border border-gray-200">
         <div className="mb-6 flex justify-between items-start">
           <div>
-            <h3 className="text-lg font-bold text-gray-900 mb-1">Project Timeline</h3>
-            <p className="text-xs text-gray-600">Click rows to expand/collapse. Blue bars = planned, Green/Red bars = actual</p>
+            <h3 className="text-2xl font-semibold text-gray-900 mb-1">Project Timeline</h3>
+            <p className="text-sm text-gray-600">Click rows to expand/collapse. Blue bars = planned, Green/Red bars = actual</p>
           </div>
           <div className="flex gap-4 text-xs">
             <div className="flex items-center gap-2">
-              <div className="w-2.5 h-2.5 bg-blue-400 rounded-full" />
+              <div className="w-3 h-3 bg-blue-500 rounded-full" />
               <span className="text-gray-700 font-medium">Planned</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-2.5 h-2.5 bg-green-400 rounded-full" />
+              <div className="w-3 h-3 bg-green-500 rounded-full" />
               <span className="text-gray-700 font-medium">On Time</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-2.5 h-2.5 bg-red-500 rounded-full" />
+              <div className="w-3 h-3 bg-red-500 rounded-full" />
               <span className="text-gray-700 font-medium">Delayed</span>
             </div>
           </div>
         </div>
 
         {/* Table */}
-        <div className="overflow-x-auto border border-gray-300 rounded-lg">
-          <table className="w-full">
-            <thead>
-              <tr className="bg-white border-b-2 border-gray-300">
-                <th className="p-4 text-left font-semibold text-gray-800 sticky left-0 bg-white text-sm w-96">
-                  Task
-                </th>
-                {MONTHS.map((month, idx) => (
-                  <th
-                    key={idx}
-                    className="p-2 text-center font-semibold text-gray-700 text-xs whitespace-nowrap min-w-20 border-l border-gray-200"
-                  >
-                    {month.split(' ')[0]}
-                    <br />
-                    {month.split(' ')[1]}
+        <div className="border border-gray-300 rounded-lg overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="bg-white border-b border-gray-300">
+                  <th className="px-4 py-3 text-left font-semibold text-gray-800 text-sm bg-white w-80">
+                    Task
                   </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>{renderTasks(tasks)}</tbody>
-          </table>
+                  {MONTHS.map((month, idx) => {
+                    const [monthName, year] = month.split(' ');
+                    return (
+                      <th
+                        key={idx}
+                        className="px-2 py-2 text-center font-semibold text-gray-700 text-xs whitespace-nowrap min-w-16 bg-white border-l border-gray-200"
+                      >
+                        <div className="font-medium">{monthName}</div>
+                        <div className="text-xs text-gray-500">{year}</div>
+                      </th>
+                    );
+                  })}
+                </tr>
+              </thead>
+              <tbody>
+                {renderTasks(tasks)}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
-
       {/* Legend Section */}
       <div className="p-6 bg-white rounded-lg shadow-lg border border-gray-200">
-        <h3 className="text-base font-bold text-gray-900 mb-4">Legend</h3>
+        <h3 className="text-2xl font-semibold text-gray-900 mb-4">Legend</h3>
         <div className="space-y-3">
           <div className="flex items-center gap-3">
-            <span className="inline-flex items-center px-3 py-1 rounded-full bg-blue-500 text-white text-xs font-semibold">
+            <span className="inline-flex items-center px-3 py-1 rounded-full bg-blue-700 text-white text-xs font-semibold">
               Project
             </span>
             <span className="text-sm text-gray-700">Top-level projects</span>
           </div>
           <div className="flex items-center gap-3">
-            <span className="inline-flex items-center px-3 py-1 rounded-full bg-gray-300 text-gray-900 text-xs font-semibold">
+            <span className="inline-flex items-center px-3 py-1 rounded-full border px-2.5 bg-white-300 text-gray-900 text-xs font-semibold">
               Milestone
             </span>
             <span className="text-sm text-gray-700">Major phases within projects</span>
           </div>
           <div className="flex items-center gap-3">
-            <span className="inline-flex items-center px-3 py-1 rounded-full bg-gray-200 border border-gray-400 text-gray-800 text-xs font-semibold">
+            <span className="inline-flex items-center px-3 py-1 rounded-full bg-white-200 border border-gray-200 text-gray-500 text-xs font-semibold">
               Activity
             </span>
             <span className="text-sm text-gray-700">Specific tasks assigned to engineers</span>
