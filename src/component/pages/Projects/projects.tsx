@@ -147,28 +147,28 @@ export default function ProjectsPage() {
       </div>
 
       {/* Stats Cards with grey border - Moved to bottom */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-300 p-4 sm:p-6">
-          <h3 className="text-base sm:text-lg font-semibold text-gray-700 mb-1 sm:mb-2">
-            Total Projects
-          </h3>
-          <p className="text-2xl sm:text-3xl font-bold text-gray-900">2</p>
-        </div>
-        <div className="bg-white rounded-lg shadow-sm border border-gray-300 p-4 sm:p-6">
-          <h3 className="text-base sm:text-lg font-semibold text-gray-700 mb-1 sm:mb-2">Ongoing</h3>
-          <p className="text-2xl sm:text-3xl font-bold text-gray-900">2</p>
-        </div>
-        <div className="bg-white rounded-lg shadow-sm border border-gray-300 p-4 sm:p-6">
-          <h3 className="text-base sm:text-lg font-semibold text-gray-700 mb-1 sm:mb-2">Completed</h3>
-          <p className="text-2xl sm:text-3xl font-bold text-gray-900">0</p>
-        </div>
-        <div className="bg-white rounded-lg shadow-sm border border-gray-300 p-4 sm:p-6">
-          <h3 className="text-base sm:text-lg font-semibold text-gray-700 mb-1 sm:mb-2">
-            Total Value
-          </h3>
-          <p className="text-2xl sm:text-3xl font-bold text-gray-900">₹8,50,00,000</p>
-        </div>
-      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
+  <div className="bg-white rounded-lg shadow-sm border border-gray-300 p-4 sm:p-5 lg:p-6 min-w-0">
+    <h3 className="text-base sm:text-lg font-semibold text-gray-700 mb-2 sm:mb-3">
+      Total Projects
+    </h3>
+    <p className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">2</p>
+  </div>
+  <div className="bg-white rounded-lg shadow-sm border border-gray-300 p-4 sm:p-5 lg:p-6 min-w-0">
+    <h3 className="text-base sm:text-lg font-semibold text-gray-700 mb-2 sm:mb-3">Ongoing</h3>
+    <p className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">2</p>
+  </div>
+  <div className="bg-white rounded-lg shadow-sm border border-gray-300 p-4 sm:p-5 lg:p-6 min-w-0">
+    <h3 className="text-base sm:text-lg font-semibold text-gray-700 mb-2 sm:mb-3">Completed</h3>
+    <p className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">0</p>
+  </div>
+  <div className="bg-white rounded-lg shadow-sm border border-gray-300 p-4 sm:p-5 lg:p-6 min-w-0">
+  <h3 className="text-base sm:text-lg font-semibold text-gray-700 mb-2 sm:mb-3">
+    Total Value
+  </h3>
+  <p className="text-base sm:text-3xl  lg:text-xl font-bold text-gray-900">₹8,50,00,000</p>
+</div>
+</div>
 
       {/* Add Project Dialog */}
       <AddProjectDialog

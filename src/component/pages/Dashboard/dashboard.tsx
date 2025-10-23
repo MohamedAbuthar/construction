@@ -2,6 +2,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { ArrowRight, Folder, Clock, DollarSign, AlertCircle, MapPin, Calendar } from 'lucide-react';
 
 interface DashboardProps {
@@ -9,6 +10,8 @@ interface DashboardProps {
 }
 
 export default function DashboardPage({ userRole = 'Admin' }: DashboardProps) {
+  const router = useRouter();
+
   const getWelcomeMessage = () => {
     switch (userRole) {
       case 'Site Engineer':
@@ -18,6 +21,10 @@ export default function DashboardPage({ userRole = 'Admin' }: DashboardProps) {
       default:
         return 'Welcome back, Admin User';
     }
+  };
+
+  const handleProjectClick = (projectId: string) => {
+    router.push(`/projects/view?id=${projectId}`);
   };
 
   return (
@@ -87,7 +94,11 @@ export default function DashboardPage({ userRole = 'Admin' }: DashboardProps) {
           <div className="overflow-x-auto">
             <table className="w-full">
               <tbody>
-                <tr className="border-b border-gray-100 bg-gray-50/50 hover:bg-blue-100 transition-colors">
+                {/* Project 1 - Clickable row */}
+                <tr 
+                  className="border-b border-gray-100 bg-gray-50/50 hover:bg-blue-100 transition-colors cursor-pointer"
+                  onClick={() => handleProjectClick('1')}
+                >
                   <td className="py-3 sm:py-4 px-4 sm:px-6">
                     <div className="font-medium text-gray-900 text-sm sm:text-base">Metro Station Construction - Phase 2</div>
                     <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mt-2 text-sm text-gray-500">
@@ -110,7 +121,12 @@ export default function DashboardPage({ userRole = 'Admin' }: DashboardProps) {
                     <span className="font-bold text-gray-900 text-sm sm:text-base">₹5,00,00,000</span>
                   </td>
                 </tr>
-                <tr className="border-b border-gray-100 bg-gray-50/50 hover:bg-blue-100 transition-colors">
+                
+                {/* Project 2 - Clickable row */}
+                <tr 
+                  className="border-b border-gray-100 bg-gray-50/50 hover:bg-blue-100 transition-colors cursor-pointer"
+                  onClick={() => handleProjectClick('2')}
+                >
                   <td className="py-3 sm:py-4 px-4 sm:px-6">
                     <div className="font-medium text-gray-900 text-sm sm:text-base">Residential Complex - Tower A</div>
                     <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mt-2 text-sm text-gray-500">
@@ -167,27 +183,13 @@ export default function DashboardPage({ userRole = 'Admin' }: DashboardProps) {
                     </div>
                   </td>
                   <td className="py-3 sm:py-4 px-4 sm:px-6 text-right">
-                    <span className="inline-flex items-center bg-yellow-100 text-yellow-800 px-2 sm:px-3 py-1 rounded-full text-xs font-medium">
-                      <Clock className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
-                      Under Review
-                    </span>
+                    <span className="inline-flex items-center bg-orange-400 text-white px-2 sm:px-3 py-1 rounded-full text-xs font-medium hover:bg-blue-500 transition-colors">
+  <Clock className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
+  Under Review
+</span>
                   </td>
                 </tr>
-                <tr className="border-b border-gray-100 bg-gray-50/50">
-                  <td className="py-3 sm:py-4 px-4 sm:px-6">
-                    <div className="font-bold text-gray-900 text-sm sm:text-base">₹1,50,000</div>
-                    <div className="flex items-center space-x-1 mt-1 text-sm text-gray-500">
-                      <Calendar className="w-3 h-3 sm:w-4 sm:h-4" />
-                      <span className="text-xs sm:text-sm">Week of 10/20/2025</span>
-                    </div>
-                  </td>
-                  <td className="py-3 sm:py-4 px-4 sm:px-6 text-right">
-                    <span className="inline-flex items-center bg-yellow-100 text-yellow-800 px-2 sm:px-3 py-1 rounded-full text-xs font-medium">
-                      <Clock className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
-                      Under Review
-                    </span>
-                  </td>
-                </tr>
+                
               </tbody>
             </table>
           </div>

@@ -1,9 +1,10 @@
 'use client';
-import React, { use, useState } from 'react';
-import { RefreshCw } from 'lucide-react';
+import React, { useState } from 'react';
+import { RefreshCw, X } from 'lucide-react';
 
 const Settings = () => {
   const [isResetting, setIsResetting] = useState(false);
+  const [showToast, setShowToast] = useState(false);
 
   const handleResetDemoData = () => {
     setIsResetting(true);
@@ -12,12 +13,18 @@ const Settings = () => {
     setTimeout(() => {
       // Reset any demo data here
       // In a real app, this would clear localStorage, reset state, etc.
-      alert('Demo data has been reset to its initial state!');
       setIsResetting(false);
+      setShowToast(true);
       
-      // Optional: Reload the page to reset all state
-      // window.location.reload();
+      // Auto hide toast after 5 seconds
+      setTimeout(() => {
+        setShowToast(false);
+      }, 5000);
     }, 1000);
+  };
+
+  const closeToast = () => {
+    setShowToast(false);
   };
 
   return (
@@ -70,6 +77,26 @@ const Settings = () => {
           </div>
         </div>
       </div>
+
+      {/* Toast Notification */}
+      {showToast && (
+        <div className="fixed bottom-4 right-4 z-50 animate-in slide-in-from-right duration-300">
+          <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-4 max-w-sm">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <p className="text-sm font-medium text-gray-900">Demo data reset successfully!</p>
+                <p className="text-sm text-gray-500 mt-1">All data has been reset to its initial state.</p>
+              </div>
+              <button
+                onClick={closeToast}
+                className="ml-4 flex-shrink-0 text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
