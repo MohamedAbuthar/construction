@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Calendar, User, FileText, CheckCircle, XCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Calendar, User, FileText, CheckCircle, XCircle, X } from 'lucide-react';
 
 interface FundRequest {
   id: string;
@@ -21,12 +21,11 @@ interface FundRequestStats {
   totalAmountPending: number;
 }
 
-const INITIAL_STATS: FundRequestStats = {
-  pending: 1,
-  approved: 1,
-  rejected: 1,
-  totalAmountPending: 200000
-};
+interface Toast {
+  id: string;
+  message: string;
+  type: 'success' | 'error';
+}
 
 const INITIAL_FUND_REQUESTS: FundRequest[] = [
   {
@@ -61,6 +60,17 @@ const INITIAL_FUND_REQUESTS: FundRequest[] = [
   }
 ];
 
+const calculateStats = (requests: FundRequest[]): FundRequestStats => {
+  const pending = requests.filter(r => r.status === 'under-review').length;
+  const approved = requests.filter(r => r.status === 'approved').length;
+  const rejected = requests.filter(r => r.status === 'rejected').length;
+  const totalAmountPending = requests
+    .filter(r => r.status === 'under-review')
+    .reduce((sum, r) => sum + r.amount, 0);
+  
+  return { pending, approved, rejected, totalAmountPending };
+};
+
 export default function Approvals() {
   const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'approved' | 'rejected'>('pending');
   const [fundRequests, setFundRequests] = useState<FundRequest[]>(INITIAL_FUND_REQUESTS);
@@ -68,6 +78,22 @@ export default function Approvals() {
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState<FundRequest | null>(null);
   const [decisionNote, setDecisionNote] = useState('');
+  const [toasts, setToasts] = useState<Toast[]>([]);
+  
+  const stats = calculateStats(fundRequests);
+
+  const showToast = (message: string, type: 'success' | 'error') => {
+    const id = Math.random().toString(36).substr(2, 9);
+    setToasts(prev => [...prev, { id, message, type }]);
+    
+    setTimeout(() => {
+      setToasts(prev => prev.filter(toast => toast.id !== id));
+    }, 3000);
+  };
+
+  const removeToast = (id: string) => {
+    setToasts(prev => prev.filter(toast => toast.id !== id));
+  };
 
   const filteredRequests = fundRequests.filter(request => {
     if (filterStatus === 'all') return true;
@@ -130,13 +156,16 @@ export default function Approvals() {
         req.id === selectedRequest.id ? { ...req, status: 'approved' as const } : req
       );
       setFundRequests(updatedRequests);
+      showToast('Request Approved', 'success');
     }
     setIsDetailsDialogOpen(false);
     setDecisionNote('');
   };
 
   const handleReject = (): void => {
-    if (!selectedRequest || !decisionNote.trim()) {
+    if (!selectedRequest) return;
+    
+    if (!decisionNote.trim()) {
       alert('Please enter a decision note for rejection');
       return;
     }
@@ -146,9 +175,10 @@ export default function Approvals() {
         req.id === selectedRequest.id ? { ...req, status: 'rejected' as const } : req
       );
       setFundRequests(updatedRequests);
+      showToast('Request Rejected', 'error');
+      setIsDetailsDialogOpen(false);
+      setDecisionNote('');
     }
-    setIsDetailsDialogOpen(false);
-    setDecisionNote('');
   };
 
   return (
@@ -168,7 +198,7 @@ export default function Approvals() {
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
-            Pending ({INITIAL_STATS.pending})
+            Pending ({stats.pending})
           </button>
           <button
             onClick={() => setFilterStatus('all')}
@@ -187,19 +217,19 @@ export default function Approvals() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <div className="p-4 sm:p-6 bg-white rounded-lg border border-gray-200 shadow-sm">
           <h3 className="text-xs sm:text-sm font-medium text-gray-600 mb-1 sm:mb-2">Pending</h3>
-          <p className="text-2xl sm:text-3xl font-bold text-gray-900">{INITIAL_STATS.pending}</p>
+          <p className="text-2xl sm:text-3xl font-bold text-gray-900">{stats.pending}</p>
         </div>
         <div className="p-4 sm:p-6 bg-white rounded-lg border border-gray-200 shadow-sm">
           <h3 className="text-xs sm:text-sm font-medium text-gray-600 mb-1 sm:mb-2">Approved</h3>
-          <p className="text-2xl sm:text-3xl font-bold text-gray-900">{INITIAL_STATS.approved}</p>
+          <p className="text-2xl sm:text-3xl font-bold text-gray-900">{stats.approved}</p>
         </div>
         <div className="p-4 sm:p-6 bg-white rounded-lg border border-gray-200 shadow-sm">
           <h3 className="text-xs sm:text-sm font-medium text-gray-600 mb-1 sm:mb-2">Rejected</h3>
-          <p className="text-2xl sm:text-3xl font-bold text-gray-900">{INITIAL_STATS.rejected}</p>
+          <p className="text-2xl sm:text-3xl font-bold text-gray-900">{stats.rejected}</p>
         </div>
         <div className="p-4 sm:p-6 bg-white rounded-lg border border-gray-200 shadow-sm col-span-2 lg:col-span-1">
           <h3 className="text-xs sm:text-sm font-medium text-gray-600 mb-1 sm:mb-2">Total Amount (Pending)</h3>
-          <p className="text-xl sm:text-2xl font-bold text-gray-900">{formatCurrency(INITIAL_STATS.totalAmountPending)}</p>
+          <p className="text-xl sm:text-2xl font-bold text-gray-900">{formatCurrency(stats.totalAmountPending)}</p>
         </div>
       </div>
 
@@ -211,9 +241,9 @@ export default function Approvals() {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full">
+          <table className="w-full border-1">
             <thead>
-              <tr className="border-b-2 border-gray-300 bg-gray-50">
+              <tr className="border-b-2 border-gray-300 bg-white-50">
                 <th className="px-4 lg:px-6 py-3 text-left text-xs sm:text-sm font-semibold text-gray-500">Week</th>
                 <th className="px-4 lg:px-6 py-3 text-left text-xs sm:text-sm font-semibold text-gray-500">Engineer</th>
                 <th className="px-4 lg:px-6 py-3 text-left text-xs sm:text-sm font-semibold text-gray-500">Milestone</th>
@@ -319,24 +349,34 @@ export default function Approvals() {
         </div>
       </div>
 
-      {/* Fund Request Details Dialog */}
+      {/* Fund Request Details Dialog - shadcn style */}
       {isDetailsDialogOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-xl max-h-[90vh] flex flex-col">
-            {/* Header with Close Button */}
-            <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-start flex-shrink-0">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">Fund Request Details</h3>
-                <p className="text-sm text-gray-500 mt-0.5">Review the request and provide your decision</p>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          {/* Backdrop */}
+          <div 
+            className="fixed inset-0 bg-black/50 transition-opacity"
+            onClick={() => setIsDetailsDialogOpen(false)}
+          />
+          
+          {/* Dialog */}
+          <div className="relative bg-white rounded-lg shadow-xl w-full max-w-xl max-h-[90vh] flex flex-col">
+            {/* Header */}
+            <div className="px-6 py-4 border-b border-gray-200 flex-shrink-0">
+              <div className="flex items-start justify-between">
+                <div>
+                  <h2 className="text-lg font-semibold text-gray-900">Fund Request Details</h2>
+                  <p className="text-sm text-gray-500 mt-0.5">Review the request and provide your decision</p>
+                </div>
+                <button
+                  onClick={() => setIsDetailsDialogOpen(false)}
+                  className="text-gray-400 hover:text-gray-600 transition rounded-sm hover:bg-gray-100 p-1"
+                >
+                  <X size={20} />
+                </button>
               </div>
-              <button
-                onClick={() => setIsDetailsDialogOpen(false)}
-                className="text-gray-400 hover:text-gray-600 transition"
-              >
-                <XCircle size={20} />
-              </button>
             </div>
 
+            {/* Content */}
             {selectedRequest && (
               <div className="overflow-y-auto flex-1 px-6 py-5">
                 <div className="space-y-5">
@@ -393,13 +433,13 @@ export default function Approvals() {
                   {/* Decision Note for Under Review */}
                   {selectedRequest.status === 'under-review' && (
                     <div>
-                      <p className="text-sm font-medium text-gray-600 mb-2">Decision Note</p>
+                      <label className="text-sm font-medium text-gray-600 mb-2 block">Decision Note</label>
                       <textarea
                         value={decisionNote}
                         onChange={(e) => setDecisionNote(e.target.value)}
                         placeholder="Enter your decision note (required for rejection)..."
                         rows={4}
-                        className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm text-gray-900 resize-none transition-colors"
+                        className="w-full px-3 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-gray-900 resize-none transition-all"
                       />
                     </div>
                   )}
@@ -431,21 +471,21 @@ export default function Approvals() {
               </div>
             )}
 
-            {/* Footer Buttons */}
-            <div className="px-6 py-4 border-t border-gray-200 flex flex-col-reverse sm:flex-row gap-3 justify-end flex-shrink-0 bg-white">
+            {/* Footer */}
+            <div className="px-6 py-4 border-t border-gray-200 flex flex-col-reverse sm:flex-row gap-3 justify-end flex-shrink-0 bg-gray-50">
               {selectedRequest?.status === 'under-review' && (
                 <>
                   <button
                     onClick={handleReject}
-                    disabled={!decisionNote.trim()}
-                    className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium text-gray-700 border border-gray-300 bg-white hover:bg-gray-50 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed transition"
+                    // disabled={!decisionNote.trim()}
+                    className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-md text-sm font-medium text-gray-700 border border-gray-300 bg-white hover:bg-gray-50 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors"
                   >
                     <XCircle size={16} />
                     Reject
                   </button>
                   <button
                     onClick={handleApprove}
-                    className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition shadow-sm"
+                    className="inline-flex items-center justify-center gap-2 px-5 py-2 rounded-md text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors shadow-sm"
                   >
                     <CheckCircle size={16} />
                     Approve
@@ -456,6 +496,60 @@ export default function Approvals() {
           </div>
         </div>
       )}
+
+      {/* Toast Notifications */}
+      <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none">
+        {toasts.map((toast) => (
+          <div
+            key={toast.id}
+            className={`pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg border animate-slide-in-right ${
+              toast.type === 'success'
+                ? 'bg-white border-green-200'
+                : 'bg-white border-red-200'
+            }`}
+          >
+            <div className="flex items-center gap-3 flex-1">
+              {toast.type === 'success' ? (
+                <CheckCircle size={20} className="text-green-600 flex-shrink-0" />
+              ) : (
+                <XCircle size={20} className="text-red-600 flex-shrink-0" />
+              )}
+              <div>
+                <p className="text-sm font-semibold text-gray-900">
+                  {toast.message}
+                </p>
+                <p className="text-xs text-gray-600">
+                  {toast.type === 'success' 
+                    ? 'The fund request has been approved successfully.' 
+                    : 'The fund request has been rejected.'}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => removeToast(toast.id)}
+              className="text-gray-400 hover:text-gray-600 flex-shrink-0"
+            >
+              <X size={16} />
+            </button>
+          </div>
+        ))}
+      </div>
+
+      <style jsx>{`
+        @keyframes slide-in-right {
+          from {
+            transform: translateX(100%);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+        .animate-slide-in-right {
+          animation: slide-in-right 0.3s ease-out;
+        }
+      `}</style>
     </div>
   );
 }
